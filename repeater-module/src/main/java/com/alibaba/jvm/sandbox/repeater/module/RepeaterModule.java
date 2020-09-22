@@ -14,6 +14,7 @@ import com.alibaba.jvm.sandbox.repeater.module.impl.JarFileLifeCycleManager;
 import com.alibaba.jvm.sandbox.repeater.module.util.LogbackUtils;
 import com.alibaba.jvm.sandbox.repeater.plugin.Constants;
 import com.alibaba.jvm.sandbox.repeater.plugin.api.Broadcaster;
+import com.alibaba.jvm.sandbox.repeater.plugin.api.ConfigListener;
 import com.alibaba.jvm.sandbox.repeater.plugin.api.ConfigManager;
 import com.alibaba.jvm.sandbox.repeater.plugin.api.InvocationListener;
 import com.alibaba.jvm.sandbox.repeater.plugin.api.LifecycleManager;
@@ -61,7 +62,7 @@ import static com.alibaba.jvm.sandbox.repeater.plugin.Constants.REPEAT_SPRING_AD
  */
 @MetaInfServices(Module.class)
 @Information(id = com.alibaba.jvm.sandbox.repeater.module.Constants.MODULE_ID, author = "zhaoyb1990", version = com.alibaba.jvm.sandbox.repeater.module.Constants.VERSION)
-public class RepeaterModule implements Module, ModuleLifecycle {
+public class RepeaterModule implements Module, ModuleLifecycle, ConfigListener {
 
     private final static Logger log = LoggerFactory.getLogger(RepeaterModule.class);
 
@@ -135,12 +136,13 @@ public class RepeaterModule implements Module, ModuleLifecycle {
                 configManager = StandaloneSwitch.instance().getConfigManager();
                 broadcaster = StandaloneSwitch.instance().getBroadcaster();
                 invocationListener = new DefaultInvocationListener(broadcaster);
+                ClassloaderBridge.init(loadedClassDataSource);
                 RepeaterResult<RepeaterConfig> pr = configManager.pullConfig();
-                if (pr.isSuccess()) {
+                if (pr.isSuccess() && null != pr.getData()) {
                     log.info("pull repeater config success,config={}", pr.getData());
-                    ClassloaderBridge.init(loadedClassDataSource);
                     initialize(pr.getData());
                 }
+                configManager.registerConfigListener(RepeaterModule.this);
             }
         });
         heartbeatHandler = new HeartbeatHandler(configInfo, moduleManager);
@@ -154,6 +156,7 @@ public class RepeaterModule implements Module, ModuleLifecycle {
      */
     private synchronized void initialize(RepeaterConfig config) {
         if (initialized.compareAndSet(false, true)) {
+            log.info("initialize repeater");
             try {
                 ApplicationModel.instance().setConfig(config);
                 // 特殊路由表;
@@ -195,6 +198,8 @@ public class RepeaterModule implements Module, ModuleLifecycle {
             } catch (Throwable throwable) {
                 initialized.compareAndSet(true, false);
                 log.error("error occurred when initialize module", throwable);
+            }finally {
+                log.info("initialize repeater end");
             }
         }
     }
@@ -317,6 +322,7 @@ public class RepeaterModule implements Module, ModuleLifecycle {
      */
     private void noticeConfigChange(final RepeaterConfig config) {
         if (initialized.get()) {
+            log.info("notice config change start");
             for (InvokePlugin invokePlugin : invokePlugins) {
                 try {
                     if (invokePlugin.enable(config)) {
@@ -325,6 +331,23 @@ public class RepeaterModule implements Module, ModuleLifecycle {
                 } catch (PluginLifeCycleException e) {
                     log.error("error occurred when notice config, plugin ={}", invokePlugin.getType().name(), e);
                 }
+            }
+            log.info("notice config change end");
+        }
+    }
+
+    /**
+     * 配置变更监听接口
+     *
+     * @param repeaterResult 配置
+     */
+    @Override
+    public void receiveRepeaterConfig(RepeaterResult<RepeaterConfig> repeaterResult) {
+        if(null != repeaterResult && repeaterResult.isSuccess() && null != repeaterResult.getData()){
+            if(null == ApplicationModel.instance().getConfig()){
+                initialize(repeaterResult.getData());
+            }else{
+                noticeConfigChange(repeaterResult.getData());
             }
         }
     }

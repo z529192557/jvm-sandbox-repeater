@@ -1,7 +1,9 @@
 package com.alibaba.jvm.sandbox.repeater.plugin.core.impl.standalone;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.jvm.sandbox.repeater.plugin.api.ConfigListener;
 import com.alibaba.jvm.sandbox.repeater.plugin.api.ConfigManager;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.config.AbstractConfigManager;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.util.PathUtils;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterConfig;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterResult;
@@ -17,7 +19,7 @@ import java.io.File;
  *
  * @author zhaoyb1990
  */
-public class StandaloneConfigManager implements ConfigManager {
+public class StandaloneConfigManager extends AbstractConfigManager {
 
     private final static Logger log = LoggerFactory.getLogger(StandaloneConfigManager.class);
 
@@ -33,5 +35,4 @@ public class StandaloneConfigManager implements ConfigManager {
             return RepeaterResult.builder().success(false).message(e.getMessage()).build();
         }
     }
-
 }

@@ -14,6 +14,8 @@ import java.lang.reflect.Field;
  * ├── cfg
  * │   ├── repeater-logback.xml
  * │   └── repeater.properties
+ * ├── lib
+ * │   └── diamond-config.jar
  * ├── plugins
  * │   ├── dubbo-plugin.jar
  * │   ├── http-plugin.jar
@@ -27,6 +29,20 @@ import java.lang.reflect.Field;
  * @author zhaoyb1990
  */
 public class PathUtils {
+
+
+    /**
+     * 获取repeater的lib绝对路径
+     *
+     * @return 插件绝对路径
+     */
+    public static String getLibPath() {
+        String modulePath = getModulePath();
+        if (StringUtils.isEmpty(modulePath)) {
+            return null;
+        }
+        return modulePath + "/repeater-lib";
+    }
 
     /**
      * 获取插件绝对路径

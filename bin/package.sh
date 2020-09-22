@@ -17,10 +17,12 @@ mvn clean package -Dmaven.test.skip=true -f ../pom.xml || exit_on_err 1 "package
 
 mkdir -p ${REPEATER_TARGET_DIR}/plugins
 mkdir -p ${REPEATER_TARGET_DIR}/cfg
+mkdir -p ${REPEATER_TARGET_DIR}/lib
 
 cp ./repeater-logback.xml ${REPEATER_TARGET_DIR}/cfg/repeater-logback.xml \
     && cp ./repeater.properties ${REPEATER_TARGET_DIR}/cfg/repeater.properties \
     && cp ./repeater-config.json ${REPEATER_TARGET_DIR}/cfg/repeater-config.json \
+    && cp ../repeater-config/diamond-config/target/diamond-config-*-jar-with-dependencies.jar ${REPEATER_TARGET_DIR}/repeater-lib/diamond-config.jar \
     && cp ../repeater-module/target/repeater-module-*-jar-with-dependencies.jar ${REPEATER_TARGET_DIR}/repeater-module.jar \
     && cp ../repeater-console/repeater-console-start/target/repeater-console.jar ${REPEATER_TARGET_DIR}/repeater-bootstrap.jar \
     && cp ../repeater-plugins/ibatis-plugin/target/ibatis-plugin-*-jar-with-dependencies.jar ${REPEATER_TARGET_DIR}/plugins/ibatis-plugin.jar \

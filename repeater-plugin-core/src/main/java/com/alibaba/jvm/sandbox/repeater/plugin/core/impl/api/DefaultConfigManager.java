@@ -3,7 +3,9 @@ package com.alibaba.jvm.sandbox.repeater.plugin.core.impl.api;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.alibaba.jvm.sandbox.repeater.plugin.Constants;
+import com.alibaba.jvm.sandbox.repeater.plugin.api.ConfigListener;
 import com.alibaba.jvm.sandbox.repeater.plugin.api.ConfigManager;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.config.AbstractConfigManager;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.model.ApplicationModel;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.util.HttpUtil;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.util.PropertyUtil;
@@ -16,7 +18,7 @@ import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterResult;
  *
  * @author zhaoyb1990
  */
-public class DefaultConfigManager implements ConfigManager {
+public class DefaultConfigManager extends AbstractConfigManager {
 
     private final static String DEFAULT_CONFIG_URL = PropertyUtil.getPropertyOrDefault(Constants.DEFAULT_CONFIG_DATASOURCE, "");
 
@@ -47,5 +49,4 @@ public class DefaultConfigManager implements ConfigManager {
             return RepeaterResult.builder().success(false).message(e.getMessage()).build();
         }
     }
-
 }

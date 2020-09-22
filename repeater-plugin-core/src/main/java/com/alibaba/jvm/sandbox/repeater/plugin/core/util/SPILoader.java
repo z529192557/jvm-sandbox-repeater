@@ -1,4 +1,4 @@
-package com.alibaba.jvm.sandbox.repeater.module.util;
+package com.alibaba.jvm.sandbox.repeater.plugin.core.util;
 
 import java.util.Iterator;
 import java.util.List;

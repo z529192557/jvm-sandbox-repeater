@@ -17,4 +17,9 @@ public interface ConfigManager {
      * @return 返回拉取的配置
      */
     RepeaterResult<RepeaterConfig> pullConfig();
+
+    /**
+     * 注册配置变更监听
+     */
+    void registerConfigListener(ConfigListener configListener);
 }

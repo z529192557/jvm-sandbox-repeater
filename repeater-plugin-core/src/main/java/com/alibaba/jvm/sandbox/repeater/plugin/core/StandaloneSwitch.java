@@ -3,8 +3,8 @@ package com.alibaba.jvm.sandbox.repeater.plugin.core;
 import com.alibaba.jvm.sandbox.repeater.plugin.Constants;
 import com.alibaba.jvm.sandbox.repeater.plugin.api.Broadcaster;
 import com.alibaba.jvm.sandbox.repeater.plugin.api.ConfigManager;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.config.BootStrapConfigFacotry;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.api.DefaultBroadcaster;
-import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.api.DefaultConfigManager;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.standalone.StandaloneBroadcaster;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.standalone.StandaloneConfigManager;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.util.PropertyUtil;
@@ -35,7 +35,9 @@ public class StandaloneSwitch {
             broadcaster = new StandaloneBroadcaster();
             configManager = new StandaloneConfigManager();
         } else {
-            configManager = new DefaultConfigManager();
+            BootStrapConfigFacotry facotry = new BootStrapConfigFacotry();
+            String config = PropertyUtil.getPropertyOrDefault(Constants.REPEAT_BOOTSTRAP_CONFIG, "default");
+            configManager = facotry.getConfigManager(config);
             broadcaster = new DefaultBroadcaster();
         }
     }

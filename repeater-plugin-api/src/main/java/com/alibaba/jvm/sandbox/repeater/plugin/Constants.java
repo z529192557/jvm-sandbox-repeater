@@ -49,6 +49,11 @@ public class Constants {
     public static final String REPEAT_HEARTBEAT_URL= "repeat.heartbeat.url";
 
     /**
+     * 引导配置
+     */
+    public static final String REPEAT_BOOTSTRAP_CONFIG = "repeat.bootstrap.config";
+
+    /**
      * 插件自有类正则
      */
     public static final String[] PLUGIN_CLASS_PATTERN = new String[]{
@@ -76,4 +81,6 @@ public class Constants {
      * 透传给下游的traceId；跟{@code HEADER_TRACE_ID}的差异在于，{@code HEADER_TRACE_ID_X}表示一次回放请求；需要进行Mock
      */
     public static final String HEADER_TRACE_ID_X = "Repeat-TraceId-X";
+
+    public static final String DIAMOND = "diamond";
 }
