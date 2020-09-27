@@ -8,6 +8,7 @@ import com.alibaba.jvm.sandbox.repeater.plugin.Constants;
 import com.alibaba.jvm.sandbox.repeater.plugin.annotation.ConfigActive;
 import com.alibaba.jvm.sandbox.repeater.plugin.api.ConfigListener;
 import com.alibaba.jvm.sandbox.repeater.plugin.api.ConfigManager;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.model.ApplicationModel;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterConfig;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterResult;
 
@@ -37,9 +38,7 @@ public class DiamondConfigManager implements ConfigManager {
      */
     public static final String CONFIG_DATA_ID = "com.taobao.repeater.cloud.native.config";
 
-    public static final String APP_NAME = System.getProperty("project.name") == null ? "UNKNOWN" : System.getProperty(
-        "project.name");
-
+    public static final String APP_NAME = ApplicationModel.instance().getAppName();
     @Override
     public RepeaterResult<RepeaterConfig> pullConfig() {
         LOGGER.info("wait register diamond Listener");

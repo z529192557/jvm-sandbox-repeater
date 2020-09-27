@@ -7,7 +7,7 @@ package com.alibaba.jvm.sandbox.repeater.module;
  */
 class Constants {
 
-    static final String MODULE_ID = "repeater";
+    static final String MODULE_ID = "repeater-cloud-native";
 
     static final String VERSION = "1.0.0";
 }

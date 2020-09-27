@@ -35,7 +35,12 @@ public class DubboConsumerPlugin extends AbstractInvokePluginAdapter {
                 .methodPatterns(EnhanceModel.MethodPattern.transform("invoke"))
                 .watchTypes(Event.Type.BEFORE, Event.Type.RETURN, Event.Type.THROWS)
                 .build();
-        return Lists.newArrayList(onResponse, invoke);
+
+        EnhanceModel aliDubboInvoke = EnhanceModel.builder().classPattern("com.alibaba.dubbo.rpc.filter.ConsumerContextFilter")
+            .methodPatterns(EnhanceModel.MethodPattern.transform("invoke"))
+            .watchTypes(Event.Type.BEFORE, Event.Type.RETURN, Event.Type.THROWS)
+            .build();
+        return Lists.newArrayList(onResponse, invoke,aliDubboInvoke);
     }
 
     @Override

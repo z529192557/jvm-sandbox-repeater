@@ -1,8 +1,10 @@
 package com.alibaba.jvm.sandbox.repeater.plugin.domain;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * {@link RepeaterConfig} 基础配置项
@@ -75,6 +77,7 @@ public class RepeaterConfig implements java.io.Serializable{
      * 回放器插件
      */
     private List<String> repeatIdentities = Lists.newArrayList();
+
 
     public boolean isUseTtl() {
         return useTtl;

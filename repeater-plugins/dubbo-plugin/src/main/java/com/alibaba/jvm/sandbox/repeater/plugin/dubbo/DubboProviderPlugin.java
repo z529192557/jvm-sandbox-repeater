@@ -11,6 +11,7 @@ import com.alibaba.jvm.sandbox.repeater.plugin.spi.InvokePlugin;
 import com.google.common.collect.Lists;
 import org.kohsuke.MetaInfServices;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -24,6 +25,10 @@ import java.util.List;
 @MetaInfServices(InvokePlugin.class)
 public class DubboProviderPlugin extends AbstractInvokePluginAdapter {
 
+    public DubboProviderPlugin() throws IOException, ClassNotFoundException {
+        DubboRunTimeUtil.initDubboEnv();
+    }
+
     @Override
     protected List<EnhanceModel> getEnhanceModels() {
         EnhanceModel onResponse = EnhanceModel.builder().classPattern("org.apache.dubbo.rpc.filter.ContextFilter$ContextListener")
@@ -34,7 +39,11 @@ public class DubboProviderPlugin extends AbstractInvokePluginAdapter {
                 .methodPatterns(EnhanceModel.MethodPattern.transform("invoke"))
                 .watchTypes(Event.Type.BEFORE, Event.Type.RETURN, Event.Type.THROWS)
                 .build();
-        return Lists.newArrayList(invoke, onResponse);
+        EnhanceModel aliInvoke = EnhanceModel.builder().classPattern("com.alibaba.dubbo.rpc.filter.ContextFilter")
+            .methodPatterns(EnhanceModel.MethodPattern.transform("invoke"))
+            .watchTypes(Event.Type.BEFORE, Event.Type.RETURN, Event.Type.THROWS)
+            .build();
+        return Lists.newArrayList(invoke, onResponse,aliInvoke);
     }
 
     @Override

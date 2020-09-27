@@ -3,6 +3,7 @@ package com.alibaba.jvm.sandbox.repeater.plugin.dubbo;
 import com.alibaba.jvm.sandbox.api.event.BeforeEvent;
 import com.alibaba.jvm.sandbox.api.event.Event;
 import com.alibaba.jvm.sandbox.api.event.InvokeEvent;
+import com.alibaba.jvm.sandbox.api.event.ReturnEvent;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.cache.RepeatCache;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.api.DefaultInvocationProcessor;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.util.LogUtil;
@@ -107,7 +108,7 @@ class DubboConsumerInvocationProcessor extends DefaultInvocationProcessor {
     @Override
     public Object assembleResponse(Event event) {
         // 在onResponse的before事件中组装response
-        if (event.type == Event.Type.BEFORE) {
+        if (!DubboRunTimeUtil.isAliDubbo() && event.type == Event.Type.BEFORE) {
             Object appResponse = ((BeforeEvent) event).argumentArray[0];
             try {
                 return MethodUtils.invokeMethod(appResponse, "getValue");
@@ -116,12 +117,24 @@ class DubboConsumerInvocationProcessor extends DefaultInvocationProcessor {
                 LogUtil.error("error occurred when assemble dubbo response", e);
             }
         }
+
+        //在aliDubbo的invoke return中组装response
+        if (DubboRunTimeUtil.isAliDubbo() && event.type == Event.Type.RETURN) {
+            Object appResponse = ((ReturnEvent) event).object;
+            try {
+                return MethodUtils.invokeMethod(appResponse, "getValue");
+            } catch (Exception e) {
+                // ignore
+                LogUtil.error("error occurred when assemble dubbo response", e);
+            }
+        }
+
         return null;
     }
 
     @Override
     public boolean ignoreEvent(InvokeEvent event) {
-        if (event.type == Event.Type.BEFORE) {
+        if (event.type == Event.Type.BEFORE && !DubboRunTimeUtil.isAliDubbo()) {
             BeforeEvent be = (BeforeEvent) event;
             String methodName = be.javaMethodName;
             // 回放流量忽略onResponse，非回放流量忽略invoke方法

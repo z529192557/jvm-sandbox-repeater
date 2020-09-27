@@ -348,6 +348,7 @@ public class RepeaterModule implements Module, ModuleLifecycle, ConfigListener {
                 initialize(repeaterResult.getData());
             }else{
                 noticeConfigChange(repeaterResult.getData());
+                ApplicationModel.instance().setConfig(repeaterResult.getData());
             }
         }
     }

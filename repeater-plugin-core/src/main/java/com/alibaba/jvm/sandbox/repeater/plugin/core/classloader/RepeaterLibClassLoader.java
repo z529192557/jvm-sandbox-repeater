@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 /**
  * repeater lib classLader
  *
+ * 用来隔离repeater
+ *
  * @author zhuangpeng
  * @since 2020/9/21
  */

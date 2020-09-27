@@ -1,5 +1,6 @@
 package com.alibaba.jvm.sandbox.repeater.module.classloader;
 
+import com.alibaba.jvm.sandbox.repeater.plugin.Constants;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.bridge.ClassloaderBridge;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.model.ApplicationModel;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.util.LogUtil;
@@ -72,13 +73,20 @@ public class PluginClassRouting {
                 .build();
         // dubbo回放器中对dubbo框架路由
         PluginClassRouting dubboRepeaterRouting = PluginClassRouting.builder()
-                .targetClass("org.apache.dubbo.rpc.model.ApplicationModel")
+                .targetClass(Constants.DUBBO_CLASS)
                 .classPattern("^org.apache.dubbo..*")
                 .identity("dubbo")
                 .matcher(Matcher.REPEATER)
                 .block(false)
                 .build();
-        return transformRouting(Lists.newArrayList(httpPluginRouting, dubboRepeaterRouting), isPreloading, timeout);
+        PluginClassRouting aliDubboRepeaterRouting = PluginClassRouting.builder()
+            .targetClass(Constants.ALI_DUBBO_CLASS)
+            .classPattern("^com.alibaba.dubbo..*")
+            .identity("ali-dubbo")
+            .matcher(Matcher.REPEATER)
+            .block(false)
+            .build();
+        return transformRouting(Lists.newArrayList(httpPluginRouting, dubboRepeaterRouting,aliDubboRepeaterRouting), isPreloading, timeout);
     }
 
     /**

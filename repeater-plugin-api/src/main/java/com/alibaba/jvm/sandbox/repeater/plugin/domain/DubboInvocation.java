@@ -14,11 +14,14 @@ public class DubboInvocation extends Invocation {
     private String protocol;
     private String version;
     private String address;
+    private String port;
     private String group;
     private String interfaceName;
     private String methodName;
     private String[] parameterTypes;
     private Map<String,String> parameters;
+    private Map<String,String> attachments;
+    private boolean isAliDubbo;
 
     public String getProtocol() {
         return protocol;
@@ -42,6 +45,14 @@ public class DubboInvocation extends Invocation {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public String getPort() {
+        return port;
+    }
+
+    public void setPort(String port) {
+        this.port = port;
     }
 
     public String getGroup() {
@@ -82,5 +93,21 @@ public class DubboInvocation extends Invocation {
 
     public void setParameters(Map<String, String> parameters) {
         this.parameters = parameters;
+    }
+
+    public Map<String, String> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(Map<String, String> attachments) {
+        this.attachments = attachments;
+    }
+
+    public boolean isAliDubbo() {
+        return isAliDubbo;
+    }
+
+    public void setAliDubbo(boolean aliDubbo) {
+        isAliDubbo = aliDubbo;
     }
 }

@@ -83,4 +83,14 @@ public class Constants {
     public static final String HEADER_TRACE_ID_X = "Repeat-TraceId-X";
 
     public static final String DIAMOND = "diamond";
+
+    /**
+     * dubbo目标类
+     */
+    public static final String ALI_DUBBO_CLASS = "com.alibaba.dubbo.config.model.ApplicationModel";
+    /**
+     * dubbo目标类
+     */
+    public static final String DUBBO_CLASS = "org.apache.dubbo.rpc.model.ApplicationModel";
+
 }

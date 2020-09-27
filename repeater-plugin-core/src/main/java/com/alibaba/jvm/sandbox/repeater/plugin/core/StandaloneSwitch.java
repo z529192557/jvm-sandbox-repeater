@@ -35,10 +35,10 @@ public class StandaloneSwitch {
             broadcaster = new StandaloneBroadcaster();
             configManager = new StandaloneConfigManager();
         } else {
+            broadcaster = new StandaloneBroadcaster();
             BootStrapConfigFacotry facotry = new BootStrapConfigFacotry();
             String config = PropertyUtil.getPropertyOrDefault(Constants.REPEAT_BOOTSTRAP_CONFIG, "default");
             configManager = facotry.getConfigManager(config);
-            broadcaster = new DefaultBroadcaster();
         }
     }
 

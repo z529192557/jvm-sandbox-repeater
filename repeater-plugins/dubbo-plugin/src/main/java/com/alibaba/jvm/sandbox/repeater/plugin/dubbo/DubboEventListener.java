@@ -15,6 +15,7 @@ import org.apache.commons.lang3.reflect.MethodUtils;
 import java.util.List;
 import java.util.Map;
 
+
 /**
  * {@link DubboEventListener}
  * <p>
@@ -30,25 +31,44 @@ public class DubboEventListener extends DefaultEventListener {
     @Override
     protected Invocation initInvocation(BeforeEvent event) {
         DubboInvocation dubboInvocation = new DubboInvocation();
+        dubboInvocation.setAliDubbo(DubboRunTimeUtil.isAliDubbo());
         // onResponse(Result appResponse, Invoker<?> invoker, Invocation invocation) {}
-        Object invoker = event.argumentArray[1];
-        Object invocation = event.argumentArray[2];
+        Object invoker = null;
+        Object invocation = null;
+        if(DubboRunTimeUtil.isAliDubbo()){
+            invoker = event.argumentArray[0];
+            invocation = event.argumentArray[1];
+        }else{
+            invoker = event.argumentArray[1];
+            invocation = event.argumentArray[2];
+        }
+
         try {
             Object url = MethodUtils.invokeMethod(invoker, "getUrl");
-            @SuppressWarnings("unchecked")
             Map<String, String> parameters = (Map<String, String>) MethodUtils.invokeMethod(url, "getParameters");
+            String port = String.valueOf(MethodUtils.invokeMethod(url, "getPort"));
+            String host = (String)MethodUtils.invokeMethod(url, "getHost");
             String protocol =  (String)MethodUtils.invokeMethod(url, "getProtocol");
             // methodName
             String methodName = (String) MethodUtils.invokeMethod(invocation, "getMethodName");
             Class<?>[] parameterTypes = (Class<?>[]) MethodUtils.invokeMethod(invocation, "getParameterTypes");
+
+            //attachments
+            Map<String, String> attachments = (Map<String, String>) MethodUtils.invokeMethod(invocation, "getAttachments");
+
             // interfaceName
             String interfaceName = ((Class) MethodUtils.invokeMethod(invoker, "getInterface")).getCanonicalName();
+
             dubboInvocation.setProtocol(protocol);
             dubboInvocation.setInterfaceName(interfaceName);
             dubboInvocation.setMethodName(methodName);
             dubboInvocation.setParameters(parameters);
             dubboInvocation.setVersion(parameters.get("version"));
+            dubboInvocation.setGroup(parameters.get("group"));
             dubboInvocation.setParameterTypes(transformClass(parameterTypes));
+            dubboInvocation.setAddress(host);
+            dubboInvocation.setPort(port);
+            dubboInvocation.setAttachments(attachments);
             // todo find a right way to get address and group
         } catch (Exception e) {
             LogUtil.error("error occurred when init dubbo invocation", e);
@@ -66,4 +86,6 @@ public class DubboEventListener extends DefaultEventListener {
         }
         return paramTypes.toArray(new String[0]);
     }
+
+
 }

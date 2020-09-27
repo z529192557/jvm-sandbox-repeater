@@ -38,8 +38,8 @@ public class ApplicationModel {
 
     private ApplicationModel() {
         // for example, you can define it your self
-        this.appName = getSystemPropertyOrDefault("app.name", "unknown");
-        this.environment = getSystemPropertyOrDefault("app.env", "unknown");
+        this.appName = getSystemPropertyOrDefault("project.name", "unknown");
+        this.environment = getSystemPropertyOrDefault("project.env", "unknown");
         try {
             this.host = InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException e) {
