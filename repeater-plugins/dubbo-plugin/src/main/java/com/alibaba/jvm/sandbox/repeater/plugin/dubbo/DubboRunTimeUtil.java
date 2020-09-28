@@ -46,6 +46,7 @@ public class DubboRunTimeUtil {
 
 
     public static void initDubboEnv() throws IOException, ClassNotFoundException {
+        log.info("dubbo env init start");
         boolean aliDubbo = false;
         boolean kaolaDubbo = false;
         String version = "2.7.3";
@@ -64,15 +65,18 @@ public class DubboRunTimeUtil {
             String title = manifest.getMainAttributes().getValue("Implementation-Title");
             if(null != title && title.contains(Constant.DUBBOK)){
                 kaolaDubbo = true;
+                log.info("current dubbo branch is dubbok");
             }
             String implementationVersion = manifest.getMainAttributes().getValue("Implementation-Version");
             if(null != implementationVersion){
                 version = implementationVersion;
+                log.info("current dubbo version is {}",version);
             }
             String vendorId = manifest.getMainAttributes().getValue("Implementation-Vendor-Id");
             if(null != vendorId){
                 if(vendorId.startsWith(Constant.ALI_DUBBO_PACKAGE)){
                     aliDubbo = true;
+                    log.info("current dubbo packaget is {}",vendorId);
                 }
             }
         }
