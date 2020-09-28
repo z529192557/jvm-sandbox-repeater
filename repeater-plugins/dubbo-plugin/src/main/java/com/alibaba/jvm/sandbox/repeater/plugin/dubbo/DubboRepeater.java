@@ -267,19 +267,19 @@ public class DubboRepeater extends AbstractRepeater {
     }
 
     String getDubboGroup(RepeatContext context) {
-        return getDubboMetaExtension(context,"group");
+        return getDubboMetaExtension(context,"dubbo.group");
     }
 
     String getDubboPort(RepeatContext context){
-        return getDubboMetaExtension(context,"port");
+        return getDubboMetaExtension(context,"dubbo.port");
     }
 
     String getDubboVersion(RepeatContext context){
-        return getDubboMetaExtension(context,"version");
+        return getDubboMetaExtension(context,"dubbo.version");
     }
 
     Integer getDubboTimeOut(RepeatContext context){
-        String timeOut = getMetaExtension(context, "timeOut");
+        String timeOut = getMetaExtension(context, "dubbo.timeOut");
         if(null != timeOut){
             return Integer.valueOf(timeOut);
         }
@@ -287,7 +287,7 @@ public class DubboRepeater extends AbstractRepeater {
     }
 
     String getDubboMetaExtension(RepeatContext context,String key){
-        return getMetaExtension(context, "key");
+        return getMetaExtension(context, key);
     }
 
 
