@@ -93,4 +93,9 @@ public class Constants {
      */
     public static final String DUBBO_CLASS = "org.apache.dubbo.rpc.model.ApplicationModel";
 
+    /**
+     * 回放时的traceId
+     */
+    public static final String REPEAT_TRACE_ID = "repeat-trace-id";
+
 }

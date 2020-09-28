@@ -49,6 +49,7 @@ public abstract class AbstractRepeater implements Repeater {
             stopwatch.stop();
             record.setCost(stopwatch.elapsed(TimeUnit.MILLISECONDS));
             record.setResponse(e);
+            log.error("repeat error! repeat traceId={}",record.getTraceId(),e);
         } finally {
             Tracer.end();
         }

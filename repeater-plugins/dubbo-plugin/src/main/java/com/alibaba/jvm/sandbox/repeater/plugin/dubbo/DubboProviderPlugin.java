@@ -39,7 +39,7 @@ public class DubboProviderPlugin extends AbstractInvokePluginAdapter {
                 .methodPatterns(EnhanceModel.MethodPattern.transform("invoke"))
                 .watchTypes(Event.Type.BEFORE, Event.Type.RETURN, Event.Type.THROWS)
                 .build();
-        EnhanceModel aliInvoke = EnhanceModel.builder().classPattern("com.alibaba.dubbo.rpc.filter.ContextFilter")
+        EnhanceModel aliInvoke = EnhanceModel.builder().classPattern("com.alibaba.dubbo.rpc.protocol.dubbo.filter.TraceFilter")
             .methodPatterns(EnhanceModel.MethodPattern.transform("invoke"))
             .watchTypes(Event.Type.BEFORE, Event.Type.RETURN, Event.Type.THROWS)
             .build();

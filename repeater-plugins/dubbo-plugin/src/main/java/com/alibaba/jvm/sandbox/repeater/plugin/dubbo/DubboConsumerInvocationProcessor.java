@@ -1,5 +1,6 @@
 package com.alibaba.jvm.sandbox.repeater.plugin.dubbo;
 
+import com.alibaba.dubbo.rpc.RpcResult;
 import com.alibaba.jvm.sandbox.api.event.BeforeEvent;
 import com.alibaba.jvm.sandbox.api.event.Event;
 import com.alibaba.jvm.sandbox.api.event.InvokeEvent;
@@ -92,10 +93,14 @@ class DubboConsumerInvocationProcessor extends DefaultInvocationProcessor {
         try {
             Object dubboInvocation = event.argumentArray[1];
             Object response = invocation.getResponse();
-            Class<?> aClass = event.javaClassLoader.loadClass("org.apache.dubbo.rpc.AsyncRpcResult");
-            // 调用AsyncRpcResult#newDefaultAsyncResult返回;
-            return MethodUtils.invokeStaticMethod(aClass, "newDefaultAsyncResult",
+            if(DubboRunTimeUtil.isAliDubbo()){
+                return new com.alibaba.dubbo.rpc.RpcResult(response);
+            }else{
+                Class<?> aClass = event.javaClassLoader.loadClass("org.apache.dubbo.rpc.AsyncRpcResult");
+                // 调用AsyncRpcResult#newDefaultAsyncResult返回;
+                return MethodUtils.invokeStaticMethod(aClass, "newDefaultAsyncResult",
                     new Object[]{response, dubboInvocation}, new Class[]{Object.class, dubboInvocation.getClass()});
+            }
         } catch (ClassNotFoundException e) {
             LogUtil.error("no valid AsyncRpcResult class fount in classloader {}", event.javaClassLoader, e);
             return null;
