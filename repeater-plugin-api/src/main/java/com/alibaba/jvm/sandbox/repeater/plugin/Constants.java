@@ -82,7 +82,15 @@ public class Constants {
      */
     public static final String HEADER_TRACE_ID_X = "Repeat-TraceId-X";
 
+    /**
+     * diamond name
+     */
     public static final String DIAMOND = "diamond";
+
+    /**
+     * arms name
+     */
+    public static final String ARMS = "arms";
 
     /**
      * dubbo目标类

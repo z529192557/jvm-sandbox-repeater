@@ -17,8 +17,7 @@ import com.alibaba.jvm.sandbox.repeater.plugin.core.cache.RecordCache;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.cache.RepeatCache;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.api.DefaultEventListener;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.model.ApplicationModel;
-import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.TraceGenerator;
-import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.Tracer;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.TraceFactory;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.util.LogUtil;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.*;
 import com.alibaba.jvm.sandbox.repeater.plugin.spi.MockStrategy;
@@ -68,7 +67,7 @@ public class HttpStandaloneListener extends DefaultEventListener implements Invo
                 if (StringUtils.isEmpty(traceIdX)){
                     traceIdX = req.getParameter(Constants.HEADER_TRACE_ID_X);
                 }
-                if (TraceGenerator.isValid(traceIdX)) {
+                if (TraceFactory.isValid(traceIdX)) {
                     RepeatMeta meta = new RepeatMeta();
                     meta.setAppName(ApplicationModel.instance().getAppName());
                     meta.setMock(true);
@@ -78,8 +77,8 @@ public class HttpStandaloneListener extends DefaultEventListener implements Invo
                     meta.setRepeatId(traceIdX);
                     RepeaterResult<RecordModel> pr = StandaloneSwitch.instance().getBroadcaster().pullRecord(meta);
                     if (pr.isSuccess()) {
-                        Tracer.start();
-                        RepeatContext context = new RepeatContext(meta, pr.getData(), Tracer.getTraceId());
+                        TraceFactory.start();
+                        RepeatContext context = new RepeatContext(meta, pr.getData(), TraceFactory.getTraceId());
                         RepeatCache.putRepeatContext(context);
                         return;
                     }
@@ -89,8 +88,8 @@ public class HttpStandaloneListener extends DefaultEventListener implements Invo
                 if (StringUtils.isEmpty(traceId)){
                     traceId = req.getParameter(Constants.HEADER_TRACE_ID);
                 }
-                if (TraceGenerator.isValid(traceId)) {
-                    Tracer.start(traceId);
+                if (TraceFactory.isValid(traceId)) {
+                    TraceFactory.start(traceId);
                     return;
                 }
             }
@@ -101,7 +100,7 @@ public class HttpStandaloneListener extends DefaultEventListener implements Invo
     @Override
     protected void doBefore(BeforeEvent event) throws ProcessControlException {
         // 回放流量；入口直接返回
-        if (RepeatCache.isRepeatFlow(Tracer.getTraceId())) {
+        if (RepeatCache.isRepeatFlow(TraceFactory.getTraceId())) {
             return;
         }
         Object request = event.argumentArray[0];
@@ -115,7 +114,7 @@ public class HttpStandaloneListener extends DefaultEventListener implements Invo
         List<String> patterns = ApplicationModel.instance().getConfig().getHttpEntrancePatterns();
         if (!matchRequestURI(patterns, req.getRequestURI())) {
             LogUtil.debug("current uri {} can't match any httpEntrancePatterns, ignore this request", req.getRequestURI());
-            Tracer.getContext().setSampled(false);
+            TraceFactory.getContext().setSampled(false);
             return;
         }
         WrapperResponseCopier wrapperRes = new WrapperResponseCopier(resp);
@@ -124,7 +123,7 @@ public class HttpStandaloneListener extends DefaultEventListener implements Invo
             wrapperReq = new WrapperRequest(req, wrapperRes, this);
         } catch (IOException e) {
             LogUtil.error("error occurred when assemble wrapper request", e);
-            Tracer.getContext().setSampled(false);
+            TraceFactory.getContext().setSampled(false);
             return;
         }
         WrapperTransModel wtm = WrapperTransModel.build(wrapperReq);
@@ -148,12 +147,12 @@ public class HttpStandaloneListener extends DefaultEventListener implements Invo
     }
 
     private void doFinish() {
-        if (RepeatCache.isRepeatFlow(Tracer.getTraceId())) {
+        if (RepeatCache.isRepeatFlow(TraceFactory.getTraceId())) {
             return;
         }
         WrapperTransModel wtm = wtmRef.get();
         if (wtm == null) {
-            LogUtil.warn("invalid request, no matched wtm found, traceId={}", Tracer.getTraceId());
+            LogUtil.warn("invalid request, no matched wtm found, traceId={}", TraceFactory.getTraceId());
             return;
         }
         onResponse(wtm.request, wtm);
@@ -186,7 +185,7 @@ public class HttpStandaloneListener extends DefaultEventListener implements Invo
         invocation.setIndex(1);
         invocation.setType(InvokeType.HTTP);
         invocation.setEntrance(true);
-        invocation.setTraceId(Tracer.getTraceId());
+        invocation.setTraceId(TraceFactory.getTraceId());
         invocation.setInvokeId(event.invokeId);
         invocation.setProcessId(event.processId);
         invocation.setSerializeToken(ClassloaderBridge.instance().encode(event.javaClassLoader));

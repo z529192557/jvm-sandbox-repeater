@@ -6,7 +6,7 @@ import com.alibaba.jvm.sandbox.api.event.Event.Type;
 import com.alibaba.jvm.sandbox.repeater.plugin.api.InvocationProcessor;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.cache.RepeatCache;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.SequenceGenerator;
-import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.Tracer;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.TraceFactory;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.Identity;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.Invocation;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.InvokeType;
@@ -49,7 +49,7 @@ public abstract class AbstractInvocationProcessor implements InvocationProcessor
         /*
          * 获取回放上下文
          */
-        RepeatContext context = RepeatCache.getRepeatContext(Tracer.getTraceId());
+        RepeatContext context = RepeatCache.getRepeatContext(TraceFactory.getTraceId());
         /*
          * mock执行条件
          */

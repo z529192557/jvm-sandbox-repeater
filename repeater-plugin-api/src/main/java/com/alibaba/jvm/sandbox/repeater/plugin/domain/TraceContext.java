@@ -1,15 +1,9 @@
-package com.alibaba.jvm.sandbox.repeater.plugin.core.trace;
+package com.alibaba.jvm.sandbox.repeater.plugin.domain;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import com.alibaba.jvm.sandbox.repeater.plugin.core.model.ApplicationModel;
-import com.alibaba.jvm.sandbox.repeater.plugin.domain.InvokeType;
-
-import static com.alibaba.jvm.sandbox.repeater.plugin.core.trace.TraceGenerator.getSampleBit;
-import static com.alibaba.jvm.sandbox.repeater.plugin.core.trace.TraceGenerator.isValid;
-import static java.lang.Long.parseLong;
-
+import com.alibaba.jvm.sandbox.repeater.plugin.api.Tracer;
 /**
  * {@link TraceContext} 定义一个简单的上下文，用于串联一次完成调用
  *
@@ -35,18 +29,24 @@ public class TraceContext {
     private volatile boolean sampled;
 
     /**
-     * 调用的类型{@link com.alibaba.jvm.sandbox.repeater.plugin.domain.InvokeType}
+     * 调用的类型{@link InvokeType}
      */
     private InvokeType invokeType;
+
+    /**
+     * trace实现
+     */
+    private Tracer tracer;
 
     /**
      * 额外需要透传的信息可以用这个承载
      */
     private Map<String, String> extra = new HashMap<String, String>();
 
-    TraceContext(String traceId) {
+    public TraceContext(String traceId,Tracer tracer) {
         this.timestamp = System.currentTimeMillis();
         this.traceId = traceId;
+        this.tracer = tracer;
     }
 
     public String getTraceId() {
@@ -86,10 +86,10 @@ public class TraceContext {
      * @param invokeType 调用类型
      * @return 是否被采样
      */
-    public boolean inTimeSample(InvokeType invokeType) {
+    public boolean inTimeSample(InvokeType invokeType,Integer sampleRate) {
         // 第一级入口流量才会计算采样；非自身入口类型直接抛弃
         if (this.invokeType == null || this.invokeType.equals(invokeType)) {
-            boolean sampled = isValid(traceId) && parseLong(getSampleBit(traceId)) % 10000 < ApplicationModel.instance().getSampleRate();
+            boolean sampled = tracer.isValid(traceId) && tracer.getSampleBit(traceId) % 10000 < sampleRate;
             this.invokeType = invokeType;
             this.sampled = sampled;
             return sampled;

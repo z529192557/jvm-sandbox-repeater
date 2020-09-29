@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.alibaba.jvm.sandbox.repeater.module.classloader.PluginClassLoader;
 import com.alibaba.jvm.sandbox.repeater.plugin.api.LifecycleManager;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.config.BootStrapConfigFacotry;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.util.JarFileUtil;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.util.SPILoader;
 import com.alibaba.jvm.sandbox.repeater.plugin.spi.InvokePlugin;

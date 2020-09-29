@@ -5,7 +5,7 @@ import com.alibaba.jvm.sandbox.repeater.aide.compare.ComparableFactory;
 import com.alibaba.jvm.sandbox.repeater.aide.compare.CompareResult;
 import com.alibaba.jvm.sandbox.repeater.plugin.Constants;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.serialize.SerializeException;
-import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.TraceGenerator;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.TraceFactory;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.util.HttpUtil;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.wrapper.SerializerWrapper;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeatMeta;
@@ -79,7 +79,7 @@ public class ReplayServiceImpl implements ReplayService {
             return RepeaterResult.builder().success(false).message("data does not exist").build();
         }
         if (StringUtils.isEmpty(params.getRepeatId())) {
-            params.setRepeatId(TraceGenerator.generate());
+            params.setRepeatId(TraceFactory.generate());
         }
         // save replay record
         Replay replay = saveReplay(record, params);

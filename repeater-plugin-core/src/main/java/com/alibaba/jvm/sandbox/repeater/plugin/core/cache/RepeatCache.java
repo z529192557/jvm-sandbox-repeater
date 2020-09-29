@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.Tracer;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.TraceFactory;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.MockInvocation;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RecordModel;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeatContext;
@@ -32,7 +32,7 @@ public class RepeatCache {
             @Override
             public RepeatContext load(String s) throws Exception {
                 RepeatMeta meta = new RepeatMeta();
-                return new RepeatContext(meta, null, null);
+                return new RepeatContext(meta, null);
             }
         });
 
@@ -68,7 +68,7 @@ public class RepeatCache {
      * @return 是否回放流量
      */
     public static boolean isRepeatFlow() {
-        return StringUtils.isNotEmpty(Tracer.getTraceId()) && CONTEXT_CACHE.getIfPresent(Tracer.getTraceId()) != null;
+        return StringUtils.isNotEmpty(TraceFactory.getTraceId()) && CONTEXT_CACHE.getIfPresent(TraceFactory.getTraceId()) != null;
     }
 
     /**

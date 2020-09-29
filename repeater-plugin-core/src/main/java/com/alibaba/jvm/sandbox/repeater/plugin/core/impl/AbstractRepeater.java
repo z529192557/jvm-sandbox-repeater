@@ -4,10 +4,11 @@ import java.util.concurrent.TimeUnit;
 
 import com.alibaba.jvm.sandbox.repeater.plugin.api.Broadcaster;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.cache.RepeatCache;
-import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.Tracer;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.TraceFactory;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterConfig;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeatContext;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeatModel;
+import com.alibaba.jvm.sandbox.repeater.plugin.domain.TraceContext;
 import com.alibaba.jvm.sandbox.repeater.plugin.spi.Repeater;
 
 import com.google.common.base.Stopwatch;
@@ -29,12 +30,13 @@ public abstract class AbstractRepeater implements Repeater {
     @Override
     public void repeat(RepeatContext context) {
         Stopwatch stopwatch = Stopwatch.createStarted();
+
+        TraceContext traceContext = TraceFactory.start();
+        context.setTraceId(traceContext.getTraceId());
         RepeatModel record = new RepeatModel();
         record.setRepeatId(context.getMeta().getRepeatId());
         record.setTraceId(context.getTraceId());
         try {
-            // 根据之前生成的traceId开启追踪
-            Tracer.start(context.getTraceId());
             // before invoke advice
             RepeatInterceptorFacade.instance().beforeInvoke(context.getRecordModel());
             Object response = executeRepeat(context);
@@ -51,7 +53,7 @@ public abstract class AbstractRepeater implements Repeater {
             record.setResponse(e);
             log.error("repeat error! repeat traceId={}",record.getTraceId(),e);
         } finally {
-            Tracer.end();
+            TraceFactory.end();
         }
         sendRepeat(record);
     }

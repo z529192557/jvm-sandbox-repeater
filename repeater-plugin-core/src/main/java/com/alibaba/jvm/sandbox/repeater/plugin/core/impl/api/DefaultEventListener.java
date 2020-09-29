@@ -12,11 +12,12 @@ import com.alibaba.jvm.sandbox.repeater.plugin.core.cache.RepeatCache;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.model.ApplicationModel;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.serialize.SerializeException;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.SequenceGenerator;
-import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.TraceContext;
-import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.Tracer;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.TraceFactory;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.wrapper.SerializerWrapper;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.Invocation;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.InvokeType;
+import com.alibaba.jvm.sandbox.repeater.plugin.domain.TraceContext;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -148,14 +149,14 @@ public class DefaultEventListener implements EventListener {
      */
     protected void doBefore(BeforeEvent event) throws ProcessControlException {
         // 回放流量；如果是入口则放弃；子调用则进行mock
-        if (RepeatCache.isRepeatFlow(Tracer.getTraceId())) {
+        if (RepeatCache.isRepeatFlow(TraceFactory.getTraceId())) {
             processor.doMock(event, entrance, invokeType);
             return;
         }
         Invocation invocation = initInvocation(event);
         invocation.setStart(System.currentTimeMillis());
-        invocation.setTraceId(Tracer.getTraceId());
-        invocation.setIndex(entrance ? 0 : SequenceGenerator.generate(Tracer.getTraceId()));
+        invocation.setTraceId(TraceFactory.getTraceId());
+        invocation.setIndex(entrance ? 0 : SequenceGenerator.generate(TraceFactory.getTraceId()));
         invocation.setIdentity(processor.assembleIdentity(event));
         invocation.setEntrance(entrance);
         invocation.setType(invokeType);
@@ -170,7 +171,7 @@ public class DefaultEventListener implements EventListener {
                 SerializerWrapper.inTimeSerialize(invocation);
             }
         } catch (SerializeException e) {
-            Tracer.getContext().setSampled(false);
+            TraceFactory.getContext().setSampled(false);
             log.error("Error occurred serialize", e);
         }
         RecordCache.cacheInvocation(event.invokeId, invocation);
@@ -195,9 +196,9 @@ public class DefaultEventListener implements EventListener {
      */
     protected boolean sample(Event event) {
         if (entrance && event.type == Type.BEFORE) {
-            return Tracer.getContext().inTimeSample(invokeType);
+            return TraceFactory.getContext().inTimeSample(invokeType,ApplicationModel.instance().getSampleRate());
         } else {
-            final TraceContext context = Tracer.getContext();
+            final TraceContext context = TraceFactory.getContext();
             return context != null && context.isSampled();
         }
     }
@@ -208,12 +209,12 @@ public class DefaultEventListener implements EventListener {
      * @param event return事件
      */
     protected void doReturn(ReturnEvent event) {
-        if (RepeatCache.isRepeatFlow(Tracer.getTraceId())) {
+        if (RepeatCache.isRepeatFlow(TraceFactory.getTraceId())) {
             return;
         }
         Invocation invocation = RecordCache.getInvocation(event.invokeId);
         if (invocation == null) {
-            log.debug("no valid invocation found in return,type={},traceId={}", invokeType, Tracer.getTraceId());
+            log.debug("no valid invocation found in return,type={},traceId={}", invokeType, TraceFactory.getTraceId());
             return;
         }
         invocation.setResponse(processor.assembleResponse(event));
@@ -227,12 +228,12 @@ public class DefaultEventListener implements EventListener {
      * @param event throw事件
      */
     protected void doThrow(ThrowsEvent event) {
-        if (RepeatCache.isRepeatFlow(Tracer.getTraceId())) {
+        if (RepeatCache.isRepeatFlow(TraceFactory.getTraceId())) {
             return;
         }
         Invocation invocation = RecordCache.getInvocation(event.invokeId);
         if (invocation == null) {
-            log.debug("no valid invocation found in throw,type={},traceId={}", invokeType, Tracer.getTraceId());
+            log.debug("no valid invocation found in throw,type={},traceId={}", invokeType, TraceFactory.getTraceId());
             return;
         }
         invocation.setThrowable(processor.assembleThrowable(event));
@@ -276,7 +277,7 @@ public class DefaultEventListener implements EventListener {
      */
     protected void initContext(Event event) {
         if (entrance && isEntranceBegin(event)) {
-            Tracer.start();
+            TraceFactory.start();
         }
     }
 
@@ -297,7 +298,7 @@ public class DefaultEventListener implements EventListener {
      */
     private void clearContext(Event event) {
         if (entrance && isEntranceFinish(event)) {
-            Tracer.end();
+            TraceFactory.end();
         }
     }
 
@@ -310,7 +311,7 @@ public class DefaultEventListener implements EventListener {
     protected boolean isEntranceFinish(Event event) {
         return event.type != Type.BEFORE
                 // 开启trace的类型负责清理
-                && Tracer.getContext().getInvokeType() == invokeType;
+                && TraceFactory.getContext().getInvokeType() == invokeType;
     }
 
     /**
@@ -323,7 +324,7 @@ public class DefaultEventListener implements EventListener {
      */
     protected boolean access(Event event) {
         return ApplicationModel.instance().isWorkingOn() &&
-                (!ApplicationModel.instance().isDegrade() || RepeatCache.isRepeatFlow(Tracer.getTraceId()));
+                (!ApplicationModel.instance().isDegrade() || RepeatCache.isRepeatFlow(TraceFactory.getTraceId()));
     }
 
     @Override

@@ -78,6 +78,11 @@ public class RepeaterConfig implements java.io.Serializable{
      */
     private List<String> repeatIdentities = Lists.newArrayList();
 
+    /**
+     * 加载指定的trace框架实现
+     */
+    private String traceName;
+
 
     public boolean isUseTtl() {
         return useTtl;
@@ -157,6 +162,14 @@ public class RepeaterConfig implements java.io.Serializable{
 
     public void setRepeatIdentities(List<String> repeatIdentities) {
         this.repeatIdentities = repeatIdentities;
+    }
+
+    public String getTraceName() {
+        return traceName;
+    }
+
+    public void setTraceName(String traceName) {
+        this.traceName = traceName;
     }
 
     @Override

@@ -7,7 +7,7 @@ import com.alibaba.jvm.sandbox.repeater.plugin.Constants;
 import com.alibaba.jvm.sandbox.repeater.plugin.api.InvocationListener;
 import com.alibaba.jvm.sandbox.repeater.plugin.api.InvocationProcessor;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.api.DefaultEventListener;
-import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.Tracer;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.TraceFactory;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.util.LogUtil;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.DubboInvocation;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.Invocation;
@@ -37,10 +37,10 @@ public class DubboEventListener extends DefaultEventListener {
     protected void initContext(Event event) {
         if (entrance && isEntranceBegin(event)) {
             if(DubboRunTimeUtil.isAliDubbo()){
-                Tracer.start(RpcContext.getContext().getAttachment(Constants.REPEAT_TRACE_ID));
+                TraceFactory.start(RpcContext.getContext().getAttachment(Constants.REPEAT_TRACE_ID));
                 return;
             }
-            Tracer.start();
+            TraceFactory.start();
         }
     }
 

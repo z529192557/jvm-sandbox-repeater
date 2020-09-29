@@ -35,7 +35,7 @@
         <module>repeater-console</module>
         <module>hessian-lite</module>
         <module>repeater-aide</module>
-        <module>repeater-config</module>
+        <module>repeater-lib</module>
     </modules>
 
     <developers>

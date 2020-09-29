@@ -1,19 +1,17 @@
 package com.alibaba.jvm.sandbox.repeater.plugin.core.trace;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+
 /**
- * {@link TraceGenerator} 作为{@link TraceContext#traceId}的生成器
- * <p>
- *
- * @author zhaoyb1990
+ * @author zhuangpeng
+ * @since 2020/9/28
  */
-public class TraceGenerator {
+public class DefaultTraceGenerator{
 
     private static AtomicInteger count = new AtomicInteger(10000);
 
@@ -21,15 +19,15 @@ public class TraceGenerator {
 
     private static String END_FLAG = "ed";
 
-    public static String generate() {
+    public String generate() {
         StringBuilder builder = new StringBuilder(32);
         builder.append(IP_COMPLETION)
-                .append(System.currentTimeMillis())
-                .append(getNext()).append(END_FLAG);
+            .append(System.currentTimeMillis())
+            .append(getNext()).append(END_FLAG);
         return builder.toString();
     }
 
-    public static boolean isValid(String traceId) {
+    public boolean isValid(String traceId) {
         if (StringUtils.isBlank(traceId)) {
             return false;
         }
@@ -39,7 +37,7 @@ public class TraceGenerator {
         return NumberUtils.isDigits(traceId.substring(25, 30));
     }
 
-    private static Integer getNext() {
+    private Integer getNext() {
         for (; ; ) {
             int current = count.get();
             int next = (current > 90000) ? 10000 : current + 1;
@@ -75,9 +73,5 @@ public class TraceGenerator {
             }
         }
         return builder.toString();
-    }
-
-    static String getSampleBit(String traceId) {
-        return isValid(traceId) ? traceId.substring(25, 30) : "9999";
     }
 }

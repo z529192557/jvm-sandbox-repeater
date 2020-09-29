@@ -36,7 +36,7 @@ public class StandaloneSwitch {
             configManager = new StandaloneConfigManager();
         } else {
             broadcaster = new StandaloneBroadcaster();
-            BootStrapConfigFacotry facotry = new BootStrapConfigFacotry();
+            BootStrapConfigFacotry facotry = BootStrapConfigFacotry.getInstance();
             String config = PropertyUtil.getPropertyOrDefault(Constants.REPEAT_BOOTSTRAP_CONFIG, "default");
             configManager = facotry.getConfigManager(config);
         }

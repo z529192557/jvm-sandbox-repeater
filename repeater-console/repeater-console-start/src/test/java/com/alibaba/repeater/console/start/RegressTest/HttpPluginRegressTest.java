@@ -1,6 +1,6 @@
 package com.alibaba.repeater.console.start.RegressTest;
 
-import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.TraceGenerator;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.TraceFactory;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.util.HttpUtil;
 import com.alibaba.repeater.console.start.DataProvider.HttpPluginTestDataProvider;
 import org.testng.Assert;
@@ -23,7 +23,7 @@ public class HttpPluginRegressTest {
     )
     public void httpPluginRecordRepeateTest(String url){
         try {
-            String traceId = TraceGenerator.generate();
+            String traceId = TraceFactory.generate();
             // record
             HttpUtil.Resp record = executeRecord(url, traceId, null);
             Assert.assertNotNull(record);

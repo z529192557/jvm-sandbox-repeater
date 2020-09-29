@@ -10,7 +10,13 @@ public class RepeatContext {
     private RecordModel recordModel;
     private String traceId;
 
-    public RepeatContext(RepeatMeta meta, RecordModel recordModel, String traceId) {
+
+    public RepeatContext(RepeatMeta meta, RecordModel recordModel) {
+        this.meta = meta;
+        this.recordModel = recordModel;
+    }
+
+    public RepeatContext(RepeatMeta meta, RecordModel recordModel,String traceId) {
         this.meta = meta;
         this.recordModel = recordModel;
         this.traceId = traceId;

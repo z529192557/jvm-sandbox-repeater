@@ -9,7 +9,7 @@ import com.alibaba.jvm.sandbox.repeater.plugin.api.InvocationListener;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.cache.RecordCache;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.model.ApplicationModel;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.serialize.SerializeException;
-import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.Tracer;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.TraceFactory;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.wrapper.SerializerWrapper;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.Invocation;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.InvokeType;
@@ -40,7 +40,7 @@ public class DefaultInvocationListener implements InvocationListener {
         try {
             SerializerWrapper.inTimeSerialize(invocation);
         } catch (SerializeException e) {
-            Tracer.getContext().setSampled(false);
+            TraceFactory.getContext().setSampled(false);
             log.error("Error occurred serialize", e);
         }
         if (invocation.isEntrance()) {

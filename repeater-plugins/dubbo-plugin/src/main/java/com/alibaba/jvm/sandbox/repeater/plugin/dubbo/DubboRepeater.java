@@ -5,7 +5,7 @@ import com.alibaba.jvm.sandbox.repeater.plugin.Constants;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.bridge.ClassloaderBridge;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.AbstractRepeater;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.model.ApplicationModel;
-import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.Tracer;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.TraceFactory;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.util.ClassUtils;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.DubboInvocation;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.Invocation;
@@ -85,7 +85,7 @@ public class DubboRepeater extends AbstractRepeater {
         }
         Method method = getTargetMethod(service.getClass(),dubboInvocation);
         //将traceId通过dubbo上下文传递给dubbo provider
-        RpcContext.getContext().setAttachment(Constants.REPEAT_TRACE_ID,Tracer.getTraceId());
+        RpcContext.getContext().setAttachment(Constants.REPEAT_TRACE_ID, TraceFactory.getTraceId());
         return method.invoke(service,dubboInvocation.getRequest());
     }
 

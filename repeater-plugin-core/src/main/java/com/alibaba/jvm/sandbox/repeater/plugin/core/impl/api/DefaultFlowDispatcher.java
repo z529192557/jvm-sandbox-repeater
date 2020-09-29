@@ -3,7 +3,6 @@ package com.alibaba.jvm.sandbox.repeater.plugin.core.impl.api;
 import com.alibaba.jvm.sandbox.repeater.plugin.api.FlowDispatcher;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.bridge.RepeaterBridge;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.cache.RepeatCache;
-import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.TraceGenerator;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RecordModel;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeatContext;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeatMeta;
@@ -37,9 +36,8 @@ public class DefaultFlowDispatcher implements FlowDispatcher {
         if (repeater == null) {
             throw new RepeatException("no valid repeat found for invoke type:" + recordModel.getEntranceInvocation().getType());
         }
-        RepeatContext context = new RepeatContext(meta, recordModel, TraceGenerator.generate());
+        RepeatContext context = new RepeatContext(meta, recordModel);
         // 放置到回放缓存中
-        RepeatCache.putRepeatContext(context);
         repeater.repeat(context);
     }
 }
