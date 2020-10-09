@@ -35,7 +35,7 @@ public abstract class AbstractTracer implements Tracer {
         if (!isValid(traceId)) {
             traceId = generate();
         }
-        context = new TraceContext(generate(),this);
+        context = new TraceContext(traceId,this);
         if(log.isDebugEnabled()){
             log.debug("[Tracer] start trace success,traceId={},timestamp={}", context.getTraceId(), context.getTimestamp());
         }

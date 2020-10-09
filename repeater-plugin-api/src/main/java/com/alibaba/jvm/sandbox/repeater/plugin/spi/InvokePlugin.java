@@ -111,5 +111,4 @@ public interface InvokePlugin {
      * @throws PluginLifeCycleException 插件周期异常
      */
     void onConfigChange(RepeaterConfig config) throws PluginLifeCycleException;
-
 }

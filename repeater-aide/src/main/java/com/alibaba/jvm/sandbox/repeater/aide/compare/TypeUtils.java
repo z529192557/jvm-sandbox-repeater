@@ -28,7 +28,11 @@ public class TypeUtils {
     }
 
     public static boolean isSamePackagePrefix(Class<?> clazz, String packagePrefix) {
-        return clazz.getCanonicalName().startsWith(packagePrefix);
+        String name =clazz.getCanonicalName();
+        if(null == name){
+            name = clazz.getName();
+        }
+        return  name.startsWith(packagePrefix);
     }
 
     public static boolean isBasicType(Class<?> lCs, Class<?> rCs) {

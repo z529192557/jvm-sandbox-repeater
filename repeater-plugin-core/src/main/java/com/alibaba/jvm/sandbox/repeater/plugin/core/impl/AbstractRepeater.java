@@ -30,9 +30,9 @@ public abstract class AbstractRepeater implements Repeater {
     @Override
     public void repeat(RepeatContext context) {
         Stopwatch stopwatch = Stopwatch.createStarted();
-
         TraceContext traceContext = TraceFactory.start();
         context.setTraceId(traceContext.getTraceId());
+        RepeatCache.putRepeatContext(context);
         RepeatModel record = new RepeatModel();
         record.setRepeatId(context.getMeta().getRepeatId());
         record.setTraceId(context.getTraceId());

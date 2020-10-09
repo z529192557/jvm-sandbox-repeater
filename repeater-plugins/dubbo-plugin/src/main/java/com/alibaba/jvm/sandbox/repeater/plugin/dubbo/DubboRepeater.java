@@ -80,12 +80,15 @@ public class DubboRepeater extends AbstractRepeater {
             reference.setCheck(false);
             reference.setVersion(dubboMetaConfig.getVersion());
             reference.setTimeout(dubboMetaConfig.getTimeOut());
+            reference.setCluster("failfast");
             service = reference.get();
             SERVICE_PROXY.put(serviceKey,service);
         }
         Method method = getTargetMethod(service.getClass(),dubboInvocation);
         //将traceId通过dubbo上下文传递给dubbo provider
         RpcContext.getContext().setAttachment(Constants.REPEAT_TRACE_ID, TraceFactory.getTraceId());
+        //还原Rpc上下文
+        RpcContext.getContext().getAttachments().putAll(dubboInvocation.getAttachments());
         return method.invoke(service,dubboInvocation.getRequest());
     }
 
