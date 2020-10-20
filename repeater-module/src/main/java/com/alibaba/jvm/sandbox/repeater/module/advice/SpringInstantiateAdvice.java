@@ -48,6 +48,6 @@ public class SpringInstantiateAdvice {
                         log.error("[Error-2000]-register spring bean occurred error.", e);
                     }
                 }
-            }), Type.BEFORE, Type.RETURN);
+            }), Type.BEFORE, Type.RETURN, Type.THROWS);
     }
 }
