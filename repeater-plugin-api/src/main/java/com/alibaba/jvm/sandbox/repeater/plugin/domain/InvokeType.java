@@ -27,6 +27,10 @@ public class InvokeType implements java.io.Serializable {
 
     public static InvokeType SOCKETIO = new InvokeType("socketio");
 
+    public static InvokeType SOLO = new InvokeType("solo");
+
+    public static InvokeType SOLOASYNC = new InvokeType("soloAsync");
+
     private String name;
 
     public InvokeType(String name) {

@@ -9,11 +9,12 @@
 
 `jvm-sandbox-repeater`已经实现了对于一个java方法的调用进行录制和mock的功能，当需要对Jedis相关操作进行录制和mock时，只需要了解在Jedis库中执行redis操作的方法并进行埋点即可。
 
-而该插件埋点的方法在两个类中。`redis.clients.jedis.Jedis`和`redis.clients.jedis.BinaryJedis`。
+而该插件埋点的方法在三个类中。`redis.clients.jedis.Jedis`，`redis.clients.jedis.BinaryJedis`,`redis.clients.jedis.JedisCluster`。
 埋点的方法为：
 
 1. `redis.clients.jedis.Jedis`中实现了这几个接口的方法：`JedisCommands`, `MultiKeyCommands`,`ScriptingCommands`。
 2. `redis.clients.jedis.BinaryJedis`中实现了这几个接口的方法：`BinaryJedisCommands`, `MultiKeyBinaryCommands`,`BinaryScriptingCommands`。
+3. `redis.clients.jedis.JedisCluster`中实现了这几个接口的方法：`BinaryJedisCommands`, `MultiKeyBinaryCommands`,`JedisClusterScriptingCommands`。
 
 具体实现代码见`com.alibaba.jvm.sandbox.repeater.plugin.redis.RedisPlugin`类。
 

@@ -39,6 +39,7 @@ public abstract class AbstractInvocationProcessor implements InvocationProcessor
         return null;
     }
 
+
     @Override
     public Throwable assembleThrowable(ThrowsEvent event) {
         return event.throwable;

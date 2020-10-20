@@ -69,6 +69,17 @@ public class SimpleComparator implements Comparator {
             comparator.addDifference(left, right, Difference.Type.FILED_DIFF, paths);
             return;
         }
+
+        if(left instanceof java.lang.Comparable && right instanceof java.lang.Comparable){
+            int result = ((java.lang.Comparable)left).compareTo(right);
+            if(0 == result){
+                return;
+            }else{
+                comparator.addDifference(left, right, Difference.Type.FILED_DIFF, paths);
+                return;
+            }
+        }
+
         // use equals to compare
         if (!left.equals(right)) {
             comparator.addDifference(left, right, Difference.Type.FILED_DIFF, paths);
