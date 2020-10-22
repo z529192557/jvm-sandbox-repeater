@@ -21,6 +21,7 @@ import com.alibaba.jvm.sandbox.repeater.plugin.api.LifecycleManager;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.StandaloneSwitch;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.bridge.ClassloaderBridge;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.bridge.RepeaterBridge;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.config.BootStrapConfigFacotry;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.eventbus.EventBusInner;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.eventbus.RepeatEvent;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.api.DefaultInvocationListener;
@@ -81,9 +82,7 @@ public class RepeaterModule implements Module, ModuleLifecycle, ConfigListener {
     @Resource
     private LoadedClassDataSource loadedClassDataSource;
 
-    private Broadcaster broadcaster;
-
-    private InvocationListener invocationListener;
+    private volatile InvocationListener invocationListener;
 
     private ConfigManager configManager;
 
@@ -134,8 +133,6 @@ public class RepeaterModule implements Module, ModuleLifecycle, ConfigListener {
             @Override
             public void run() {
                 configManager = StandaloneSwitch.instance().getConfigManager();
-                broadcaster = StandaloneSwitch.instance().getBroadcaster();
-                invocationListener = new DefaultInvocationListener(broadcaster);
                 ClassloaderBridge.init(loadedClassDataSource);
                 RepeaterResult<RepeaterConfig> pr = configManager.pullConfig();
                 if (pr.isSuccess() && null != pr.getData()) {
@@ -168,6 +165,10 @@ public class RepeaterModule implements Module, ModuleLifecycle, ConfigListener {
                     pluginsPath = config.getPluginsPath();
                 }
                 lifecycleManager = new JarFileLifeCycleManager(pluginsPath, routingArray);
+
+                StandaloneSwitch.instance().setBroadcaster(BootStrapConfigFacotry.getInstance().getBroadCaster(config));
+                log.info("initialize broadcaster:{}",StandaloneSwitch.instance().getBroadcaster().getClass().getCanonicalName());
+                invocationListener = new DefaultInvocationListener(StandaloneSwitch.instance().getBroadcaster());
                 // 装载插件
                 invokePlugins = lifecycleManager.loadInvokePlugins();
                 for (InvokePlugin invokePlugin : invokePlugins) {
@@ -185,7 +186,7 @@ public class RepeaterModule implements Module, ModuleLifecycle, ConfigListener {
                 List<Repeater> repeaters = lifecycleManager.loadRepeaters();
                 for (Repeater repeater : repeaters) {
                     if (repeater.enable(config)) {
-                        repeater.setBroadcast(broadcaster);
+                        repeater.setBroadcast(StandaloneSwitch.instance().getBroadcaster());
                     }
                 }
                 RepeaterBridge.instance().build(repeaters);

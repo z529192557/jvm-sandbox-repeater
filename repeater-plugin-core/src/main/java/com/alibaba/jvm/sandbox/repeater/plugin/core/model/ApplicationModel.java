@@ -3,6 +3,8 @@ package com.alibaba.jvm.sandbox.repeater.plugin.core.model;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import com.alibaba.jvm.sandbox.repeater.plugin.api.EnvAware;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.config.BootStrapConfigFacotry;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterConfig;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.util.ExceptionAware;
 
@@ -32,6 +34,8 @@ public class ApplicationModel {
 
     private ExceptionAware ea = new ExceptionAware();
 
+    private EnvAware envAware;
+
     private volatile boolean fusing = false;
 
     private static ApplicationModel instance = new ApplicationModel();
@@ -39,7 +43,6 @@ public class ApplicationModel {
     private ApplicationModel() {
         // for example, you can define it your self
         this.appName = getSystemPropertyOrDefault("project.name", "unknown");
-        this.environment = getSystemPropertyOrDefault("project.env", "unknown");
         try {
             this.host = InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException e) {
@@ -116,6 +119,8 @@ public class ApplicationModel {
 
     public void setConfig(RepeaterConfig config) {
         this.config = config;
+        this.envAware = BootStrapConfigFacotry.getInstance().getEnvAware(config);
+        this.environment = this.envAware.getEnv();
     }
 
     public ExceptionAware getEa() {

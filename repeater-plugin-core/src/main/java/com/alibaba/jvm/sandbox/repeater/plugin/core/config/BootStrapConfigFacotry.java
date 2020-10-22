@@ -3,15 +3,24 @@ package com.alibaba.jvm.sandbox.repeater.plugin.core.config;
 import java.net.URL;
 import java.util.List;
 
+import com.alibaba.jvm.sandbox.repeater.plugin.Constants;
 import com.alibaba.jvm.sandbox.repeater.plugin.annotation.ConfigActive;
+import com.alibaba.jvm.sandbox.repeater.plugin.api.Broadcaster;
 import com.alibaba.jvm.sandbox.repeater.plugin.api.ConfigManager;
+import com.alibaba.jvm.sandbox.repeater.plugin.api.EnvAware;
 import com.alibaba.jvm.sandbox.repeater.plugin.api.Tracer;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.classloader.RepeaterLibClassLoader;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.AbstractBroadcaster;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.api.DefaultBroadcaster;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.api.DefaultConfigManager;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.api.DefaultEnvAware;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.standalone.StandaloneBroadcaster;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.DefaultTracer;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.util.JarFileUtil;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.util.PathUtils;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.util.PropertyUtil;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.util.SPILoader;
+import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterConfig;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,5 +84,45 @@ public class BootStrapConfigFacotry {
             }
         }
         return new DefaultTracer();
+    }
+
+    public Broadcaster getBroadCaster(RepeaterConfig repeaterConfig) {
+        ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(repeaterLibClassLoader);
+            List<AbstractBroadcaster> broadcasters = SPILoader.loadSPI(AbstractBroadcaster.class,repeaterLibClassLoader);
+            for(AbstractBroadcaster broadcaster : broadcasters){
+                ConfigActive configActive =  broadcaster.getClass().getAnnotation(ConfigActive.class);
+                if(null != configActive && null != repeaterConfig.getBroadcasterConfig() && configActive.value().equals(repeaterConfig.getBroadcasterConfig().getName())){
+                    return broadcaster;
+                }
+            }
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldClassLoader);
+        }
+        boolean standaloneMode = Boolean.valueOf(
+            PropertyUtil.getPropertyOrDefault(Constants.REPEAT_STANDALONE_MODE, "false"));
+        if(standaloneMode){
+            return new StandaloneBroadcaster();
+        }else{
+            return new DefaultBroadcaster();
+        }
+    }
+
+    public EnvAware getEnvAware(RepeaterConfig repeaterConfig){
+        ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(repeaterLibClassLoader);
+            List<EnvAware> envAwares = SPILoader.loadSPI(EnvAware.class,repeaterLibClassLoader);
+            for(EnvAware envAware : envAwares){
+                ConfigActive configActive =  envAware.getClass().getAnnotation(ConfigActive.class);
+                if(null != configActive && configActive.value().equals(repeaterConfig.getEnvAware())){
+                    return envAware;
+                }
+            }
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldClassLoader);
+        }
+        return new DefaultEnvAware();
     }
 }

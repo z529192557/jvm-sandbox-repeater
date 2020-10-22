@@ -64,4 +64,8 @@ public class InvokeType implements java.io.Serializable {
                 "name='" + name + '\'' +
                 '}';
     }
+
+    public String getName() {
+        return name;
+    }
 }

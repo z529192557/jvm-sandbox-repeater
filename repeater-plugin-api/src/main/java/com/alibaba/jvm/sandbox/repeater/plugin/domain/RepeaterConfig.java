@@ -83,6 +83,16 @@ public class RepeaterConfig implements java.io.Serializable{
      */
     private String traceName;
 
+    /**
+     * 广播配置
+     */
+    private BroadcasterConfig broadcasterConfig;
+
+    /**
+     * 环境感知方式
+     */
+    private String envAware;
+
 
     public boolean isUseTtl() {
         return useTtl;
@@ -170,6 +180,22 @@ public class RepeaterConfig implements java.io.Serializable{
 
     public void setTraceName(String traceName) {
         this.traceName = traceName;
+    }
+
+    public BroadcasterConfig getBroadcasterConfig() {
+        return broadcasterConfig;
+    }
+
+    public void setBroadcasterConfig(BroadcasterConfig broadcasterConfig) {
+        this.broadcasterConfig = broadcasterConfig;
+    }
+
+    public String getEnvAware() {
+        return envAware;
+    }
+
+    public void setEnvAware(String envAware) {
+        this.envAware = envAware;
     }
 
     @Override

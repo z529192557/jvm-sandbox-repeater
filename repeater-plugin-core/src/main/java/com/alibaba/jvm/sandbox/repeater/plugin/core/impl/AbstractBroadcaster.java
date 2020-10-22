@@ -1,5 +1,6 @@
 package com.alibaba.jvm.sandbox.repeater.plugin.core.impl;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingDeque;

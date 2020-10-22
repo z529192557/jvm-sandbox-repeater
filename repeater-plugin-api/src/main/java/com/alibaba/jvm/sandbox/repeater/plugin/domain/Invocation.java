@@ -239,4 +239,11 @@ public class Invocation implements java.io.Serializable {
     public void setClassLoader(ClassLoader classLoader) {
         this.classLoader = classLoader;
     }
+
+    @Override
+    public String toString() {
+        return "Invocation{" +
+            "identity=" + identity.toString() +
+            '}';
+    }
 }

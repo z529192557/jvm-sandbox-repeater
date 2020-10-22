@@ -91,6 +91,10 @@ public class Constants {
      * arms name
      */
     public static final String ARMS = "arms";
+    /**
+     * METAQ name
+     */
+    public static final String METAQ = "metaq";
 
     /**
      * dubbo目标类

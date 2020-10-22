@@ -32,10 +32,8 @@ public class StandaloneSwitch {
     private StandaloneSwitch() {
         boolean standaloneMode = Boolean.valueOf(PropertyUtil.getPropertyOrDefault(Constants.REPEAT_STANDALONE_MODE, "false"));
         if (standaloneMode) {
-            broadcaster = new StandaloneBroadcaster();
             configManager = new StandaloneConfigManager();
         } else {
-            broadcaster = new StandaloneBroadcaster();
             BootStrapConfigFacotry facotry = BootStrapConfigFacotry.getInstance();
             String config = PropertyUtil.getPropertyOrDefault(Constants.REPEAT_BOOTSTRAP_CONFIG, "default");
             configManager = facotry.getConfigManager(config);
