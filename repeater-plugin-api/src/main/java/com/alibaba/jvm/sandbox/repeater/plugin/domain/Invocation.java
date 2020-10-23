@@ -243,7 +243,7 @@ public class Invocation implements java.io.Serializable {
     @Override
     public String toString() {
         return "Invocation{" +
-            "identity=" + identity.toString() +
+            "identity=" + identity.getUri() +
             '}';
     }
 }

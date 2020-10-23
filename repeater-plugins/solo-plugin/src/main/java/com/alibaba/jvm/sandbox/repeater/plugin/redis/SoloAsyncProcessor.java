@@ -46,6 +46,8 @@ public class SoloAsyncProcessor extends DefaultInvocationProcessor {
 
     private volatile Class<?> packetWrapperClass = null;
 
+    private volatile Class<?> returnResponse = null;
+
 
     private static final Cache<Future, Invocation> FUTURE_CACHE = CacheBuilder
         .newBuilder()
@@ -80,12 +82,14 @@ public class SoloAsyncProcessor extends DefaultInvocationProcessor {
         Invocation invocation = FUTURE_CACHE.getIfPresent(future);
         if(null != invocation){
             invocation.setResponse(o);
-        }
-        try {
-            SerializerWrapper.inTimeSerialize(invocation);
-        } catch (SerializeException e) {
-            TraceFactory.getContext().setSampled(false);
-            log.error("Error occurred serialize", e);
+            try {
+                SerializerWrapper.inTimeSerialize(invocation);
+            } catch (SerializeException e) {
+                TraceFactory.getContext().setSampled(false);
+                log.error("Error occurred serialize", e);
+            }finally {
+                FUTURE_CACHE.invalidate(future);
+            }
         }
     }
 
@@ -111,7 +115,10 @@ public class SoloAsyncProcessor extends DefaultInvocationProcessor {
                     "com.netease.backend.solo.client.rpc.protocol.tair2_3.PacketWrapper");
             }
 
-
+            if (returnResponse == null) {
+                returnResponse = event.javaClassLoader.loadClass(
+                    "com.netease.backend.solo.client.packets.common.ReturnResponse");
+            }
 
             Object mockResponse = invocation.getResponse();
             Object packetWrapper = MethodUtils.invokeStaticMethod(packetWrapperClass,"buildWithBody",-2, invocation.getResponse());
@@ -123,8 +130,15 @@ public class SoloAsyncProcessor extends DefaultInvocationProcessor {
             MethodUtils.invokeMethod(nkvFuture,"setCond",cond);
             MethodUtils.invokeMethod(nkvFuture,"setValue",packetWrapper);
             Constructor<?> constructor = soloFutureClass.getConstructor(nkvFutureClass,Class.class);
-            Future future = (Future)constructor.newInstance(nkvFuture,mockResponse.getClass());
-            FUTURE_RESULT_CACHE.put(future,mockResponse);
+            Future future = null;
+            if(null != mockResponse){
+                future = (Future)constructor.newInstance(nkvFuture,mockResponse.getClass());
+                FUTURE_RESULT_CACHE.put(future,mockResponse);
+            }else{
+                //mockResponse == null，说明应用进行async操作后并没有进行get操作,返回伪造的ReturnResponse即可
+                future = (Future)constructor.newInstance(nkvFuture,returnResponse);
+                FUTURE_RESULT_CACHE.put(future,returnResponse.newInstance());
+            }
             return future;
         } catch (Exception e) {
             // impossible

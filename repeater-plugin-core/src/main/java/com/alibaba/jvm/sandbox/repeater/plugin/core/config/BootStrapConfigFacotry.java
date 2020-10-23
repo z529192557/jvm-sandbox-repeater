@@ -87,6 +87,7 @@ public class BootStrapConfigFacotry {
     }
 
     public Broadcaster getBroadCaster(RepeaterConfig repeaterConfig) {
+        Broadcaster selectedBroadcaster = null;
         ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(repeaterLibClassLoader);
@@ -94,19 +95,23 @@ public class BootStrapConfigFacotry {
             for(AbstractBroadcaster broadcaster : broadcasters){
                 ConfigActive configActive =  broadcaster.getClass().getAnnotation(ConfigActive.class);
                 if(null != configActive && null != repeaterConfig.getBroadcasterConfig() && configActive.value().equals(repeaterConfig.getBroadcasterConfig().getName())){
-                    return broadcaster;
+                    selectedBroadcaster = broadcaster;
                 }
             }
         } finally {
             Thread.currentThread().setContextClassLoader(oldClassLoader);
         }
-        boolean standaloneMode = Boolean.valueOf(
-            PropertyUtil.getPropertyOrDefault(Constants.REPEAT_STANDALONE_MODE, "false"));
-        if(standaloneMode){
-            return new StandaloneBroadcaster();
-        }else{
-            return new DefaultBroadcaster();
+        if(null == selectedBroadcaster){
+            boolean standaloneMode = Boolean.valueOf(
+                PropertyUtil.getPropertyOrDefault(Constants.REPEAT_STANDALONE_MODE, "false"));
+            if(standaloneMode){
+                selectedBroadcaster = new StandaloneBroadcaster();
+            }else{
+                selectedBroadcaster = new DefaultBroadcaster();
+            }
         }
+        selectedBroadcaster.start();;
+        return selectedBroadcaster;
     }
 
     public EnvAware getEnvAware(RepeaterConfig repeaterConfig){

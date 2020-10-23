@@ -28,7 +28,7 @@ public abstract class AbstractBroadcaster implements Broadcaster {
 
     protected final static Logger log = LoggerFactory.getLogger(AbstractBroadcaster.class);
 
-    private final ConcurrentLinkedQueue<RecordModel> queue = new ConcurrentLinkedQueue<RecordModel>();
+    private final static ConcurrentLinkedQueue<RecordModel> queue = new ConcurrentLinkedQueue<RecordModel>();
 
     /**
      * 最大队列深度
@@ -47,6 +47,9 @@ public abstract class AbstractBroadcaster implements Broadcaster {
         new ThreadPoolExecutor.CallerRunsPolicy());
 
     public AbstractBroadcaster() {
+    }
+
+    public void start(){
         for (int i = 0; i < consumerThreadNum; i++) {
             executor.execute(new QueueConsumerTask());
         }
@@ -54,6 +57,7 @@ public abstract class AbstractBroadcaster implements Broadcaster {
 
     @Override
     public void sendRecord(RecordModel recordModel) {
+
         final int size = queue.size();
         if (size >= maxQueueSize) {
             log.info("can't offer queue cause size limit,aboard this record;current={},max={}", size, maxQueueSize);
