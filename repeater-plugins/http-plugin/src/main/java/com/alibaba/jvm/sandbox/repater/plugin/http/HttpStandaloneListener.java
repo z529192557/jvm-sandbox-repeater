@@ -175,7 +175,7 @@ public class HttpStandaloneListener extends DefaultEventListener implements Invo
         if (invocation == null) {
             return;
         }
-        onFinish(invocation, wtm);
+        onFinish(request,invocation, wtm);
     }
 
     @Override
@@ -204,14 +204,18 @@ public class HttpStandaloneListener extends DefaultEventListener implements Invo
         } catch (Exception e) {
             LogUtil.error("error occurred when get response,message = {}", e.getMessage());
         }
-        onFinish(invocation, wtm);
+        onFinish(request,invocation, wtm);
     }
 
-    private void onFinish(HttpInvocation invocation, WrapperTransModel wtm) {
-        if (invocation.isInit()) {
-            assembleHttpAttribute(invocation, wtm);
-            invocation.setEnd(System.currentTimeMillis());
-            listener.onInvocation(invocation);
+    private void onFinish(WrapperRequest request,HttpInvocation invocation, WrapperTransModel wtm) {
+        try {
+            if (invocation.isInit()) {
+                assembleHttpAttribute(invocation, wtm);
+                invocation.setEnd(System.currentTimeMillis());
+                listener.onInvocation(invocation);
+            }
+        } finally {
+            RecordCache.clearInvocation(request.hashCode());
         }
     }
 

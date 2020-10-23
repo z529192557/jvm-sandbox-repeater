@@ -38,27 +38,31 @@ public class DefaultInvocationListener implements InvocationListener {
     @Override
     public void onInvocation(Invocation invocation) {
         try {
-            SerializerWrapper.inTimeSerialize(invocation);
-        } catch (SerializeException e) {
-            Tracer.getContext().setSampled(false);
-            log.error("Error occurred serialize", e);
-        }
-        if (invocation.isEntrance()) {
-            ApplicationModel am = ApplicationModel.instance();
-            RecordModel recordModel = new RecordModel();
-            recordModel.setAppName(am.getAppName());
-            recordModel.setEnvironment(am.getEnvironment());
-            recordModel.setHost(am.getHost());
-            recordModel.setTraceId(invocation.getTraceId());
-            recordModel.setTimestamp(invocation.getStart());
-            recordModel.setEntranceInvocation(invocation);
-            recordModel.setSubInvocations(RecordCache.getSubInvocation(invocation.getTraceId()));
-            if (log.isDebugEnabled()){
-                log.debug("sampleOnRecord:traceId={},rootType={},subTypes={}", recordModel.getTraceId(), invocation.getType(), assembleTypes(recordModel));
+            try {
+                SerializerWrapper.inTimeSerialize(invocation);
+            } catch (SerializeException e) {
+                Tracer.getContext().setSampled(false);
+                log.error("Error occurred serialize", e);
             }
-            broadcast.sendRecord(recordModel);
-        } else {
-            RecordCache.cacheSubInvocation(invocation);
+            if (invocation.isEntrance()) {
+                ApplicationModel am = ApplicationModel.instance();
+                RecordModel recordModel = new RecordModel();
+                recordModel.setAppName(am.getAppName());
+                recordModel.setEnvironment(am.getEnvironment());
+                recordModel.setHost(am.getHost());
+                recordModel.setTraceId(invocation.getTraceId());
+                recordModel.setTimestamp(invocation.getStart());
+                recordModel.setEntranceInvocation(invocation);
+                recordModel.setSubInvocations(RecordCache.getSubInvocation(invocation.getTraceId()));
+                if (log.isDebugEnabled()){
+                    log.debug("sampleOnRecord:traceId={},rootType={},subTypes={}", recordModel.getTraceId(), invocation.getType(), assembleTypes(recordModel));
+                }
+                broadcast.sendRecord(recordModel);
+            } else {
+                RecordCache.cacheSubInvocation(invocation);
+            }
+        } finally {
+            RecordCache.clearInvocation(invocation.getInvokeId());
         }
     }
 

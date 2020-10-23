@@ -62,6 +62,16 @@ public class RecordCache {
     }
 
     /**
+     * 清除调用
+     *
+     * @param invokeId 调用ID
+     * @return 调用
+     */
+    public static void clearInvocation(int invokeId) {
+        INVOCATION_CACHE.invalidate(invokeId);
+    }
+
+    /**
      * 缓存子调用
      *
      * @param invocation 子调用
