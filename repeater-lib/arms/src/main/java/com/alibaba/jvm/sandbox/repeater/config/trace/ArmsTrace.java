@@ -14,7 +14,7 @@ import org.kohsuke.MetaInfServices;
  * @since 2020/9/21
  */
 @ConfigActive(value = Constants.ARMS)
-@MetaInfServices(Tracer.class)
+@MetaInfServices(com.alibaba.jvm.sandbox.repeater.plugin.api.Tracer.class)
 public class ArmsTrace extends AbstractTracer {
 
     private static ThreadLocal<TraceContext> ttlContext = new TransmittableThreadLocal<TraceContext>();

@@ -27,7 +27,7 @@ public abstract class AbstractTracer implements Tracer {
 
     @Override
     public TraceContext start(String traceId) {
-        TraceContext context = DefaultTracer.getContextCarrie().get();
+        TraceContext context = this.getContextCarrie().get();
         if (context != null) {
             return context;
         }
@@ -45,12 +45,12 @@ public abstract class AbstractTracer implements Tracer {
 
     @Override
     public TraceContext getContext() {
-        return AbstractTracer.getContextCarrie().get();
+        return this.getContextCarrie().get();
     }
 
     @Override
     public String getTraceId() {
-        TraceContext traceContext = getContext();
+        TraceContext traceContext = this.getContextCarrie().get();
         if(null != traceContext){
             return traceContext.getTraceId();
         }
@@ -63,7 +63,7 @@ public abstract class AbstractTracer implements Tracer {
         if (context != null && log.isDebugEnabled()) {
             log.debug("[Tracer] stop  trace success,type={},traceId={},cost={}ms", context.getInvokeType(), context.getTraceId(), System.currentTimeMillis() - context.getTimestamp());
         }
-        getContextCarrie().remove();
+        this.getContextCarrie().remove();
     }
 
     /**
