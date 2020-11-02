@@ -50,7 +50,11 @@ public abstract class AbstractTracer implements Tracer {
 
     @Override
     public String getTraceId() {
-        return AbstractTracer.getContextCarrie().get().getTraceId();
+        TraceContext traceContext = getContext();
+        if(null != traceContext){
+            return traceContext.getTraceId();
+        }
+        return null;
     }
 
     @Override
