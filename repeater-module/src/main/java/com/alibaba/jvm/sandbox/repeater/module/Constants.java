@@ -9,5 +9,5 @@ class Constants {
 
     static final String MODULE_ID = "repeater-cloud-native";
 
-    static final String VERSION = "1.0.0";
+    static final String VERSION = "1.0.1";
 }
