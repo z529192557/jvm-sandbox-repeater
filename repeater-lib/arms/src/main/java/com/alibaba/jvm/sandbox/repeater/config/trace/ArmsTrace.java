@@ -38,6 +38,9 @@ public class ArmsTrace extends AbstractTracer {
     }
 
     public boolean isValid(String traceId) {
+        if (StringUtils.isBlank(traceId)) {
+            return false;
+        }
        return traceId.split(":").length == 2;
     }
 }
