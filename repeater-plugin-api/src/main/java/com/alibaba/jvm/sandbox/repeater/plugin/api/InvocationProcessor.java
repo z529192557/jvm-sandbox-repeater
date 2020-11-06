@@ -23,7 +23,6 @@ public interface InvocationProcessor extends InvocationFilter {
      * @return 请求参数
      */
     Object[] assembleRequest(BeforeEvent event);
-
     /**
      * 组装response；比较特殊，没有确定event类型，因为在回调方式的场景下，可能通过before事件获取response
      *
@@ -82,4 +81,9 @@ public interface InvocationProcessor extends InvocationFilter {
      * @return true / false
      */
     boolean inTimeSerializeRequest(Invocation invocation, BeforeEvent event);
+
+    /**
+     * 调用结束后进行一些清理操作
+     */
+    void clear();
 }

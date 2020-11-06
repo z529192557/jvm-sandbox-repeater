@@ -26,8 +26,6 @@ import org.slf4j.LoggerFactory;
  */
 public class DefaultTracer extends AbstractTracer{
 
-    private final static Logger log = LoggerFactory.getLogger(DefaultTracer.class);
-
     private final static DefaultTraceGenerator traceGenerator = new DefaultTraceGenerator();
 
     @Override

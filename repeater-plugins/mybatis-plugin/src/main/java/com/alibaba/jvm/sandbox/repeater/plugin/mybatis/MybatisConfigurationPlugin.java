@@ -10,45 +10,32 @@ import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.AbstractInvokePluginAda
 import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.api.DefaultEventListener;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.model.EnhanceModel;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.InvokeType;
-import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterConfig;
 import com.alibaba.jvm.sandbox.repeater.plugin.spi.InvokePlugin;
 
 import com.google.common.collect.Lists;
 import org.kohsuke.MetaInfServices;
 
 /**
- * <p>
  *
- * @author zhaoyb1990
+ * @author zhuangpeng
+ * @since 2020/11/5
  */
 @MetaInfServices(InvokePlugin.class)
-public class MybatisPlugin extends AbstractInvokePluginAdapter {
-
-    private volatile  EventListener sharedEventListner = null;
-
-    public static final String MAPPERMETHOD = "org.apache.ibatis.binding.MapperMethod";
-
-    public static final String DEFAULTSQLSESSION = "org.apache.ibatis.session.defaults.DefaultSqlSession";
+public class MybatisConfigurationPlugin extends AbstractInvokePluginAdapter {
 
     @Override
     protected List<EnhanceModel> getEnhanceModels() {
         EnhanceModel em = EnhanceModel.builder()
-                .classPattern(MAPPERMETHOD)
-                .methodPatterns(EnhanceModel.MethodPattern.transform("execute"))
-                .watchTypes(Type.BEFORE, Type.RETURN, Type.THROWS)
-                .build();
-        EnhanceModel em2 = EnhanceModel.builder()
-            .classPattern(DEFAULTSQLSESSION)
-            .methodPatterns(EnhanceModel.MethodPattern.transform("selectOne","selectMap","selectCursor","selectList","insert","update","delete"))
+            .classPattern("org.apache.ibatis.session.Configuration")
+            .methodPatterns(EnhanceModel.MethodPattern.transform("getMappedStatement"))
             .watchTypes(Type.BEFORE, Type.RETURN, Type.THROWS)
             .build();
-
-        return Lists.newArrayList(em,em2);
+        return Lists.newArrayList(em);
     }
 
     @Override
     protected InvocationProcessor getInvocationProcessor() {
-        return new MybatisInvocationProcessor(getType());
+        return null;
     }
 
     @Override
@@ -58,7 +45,7 @@ public class MybatisPlugin extends AbstractInvokePluginAdapter {
 
     @Override
     public String identity() {
-        return "mybatis";
+        return InvokeType.MYBATIS.name();
     }
 
     @Override
@@ -68,14 +55,6 @@ public class MybatisPlugin extends AbstractInvokePluginAdapter {
 
     @Override
     protected EventListener getEventListener(InvocationListener listener) {
-        if(null == sharedEventListner){
-            synchronized (this){
-                if(null == sharedEventListner){
-                    sharedEventListner = new MybatisEventListener(getType(), isEntrance(), listener, getInvocationProcessor());
-                    return sharedEventListner;
-                }
-            }
-        }
-        return sharedEventListner;
+        return new MybatisConfigurationEventListener();
     }
 }

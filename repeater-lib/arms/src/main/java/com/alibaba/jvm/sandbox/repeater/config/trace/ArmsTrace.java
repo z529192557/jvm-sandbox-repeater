@@ -1,4 +1,6 @@
 package com.alibaba.jvm.sandbox.repeater.config.trace;
+import java.util.UUID;
+
 import com.alibaba.arms.tracing.Tracer;
 import com.alibaba.jvm.sandbox.repeater.plugin.Constants;
 import com.alibaba.jvm.sandbox.repeater.plugin.annotation.ConfigActive;
@@ -28,19 +30,16 @@ public class ArmsTrace extends AbstractTracer {
 
     public String generate() {
         String traceId = Tracer.builder().getSpan().getTraceId();
-        String rpcId = Tracer.builder().getSpan().getRpcId();
-        if(StringUtils.isBlank(traceId) || StringUtils.isBlank(rpcId)){
-            throw new RuntimeException("ArmsTrace error, check if jvm process has '-javaagent:/{user.workspace}/ArmsAgent/arms-bootstrap-1.7.0-SNAPSHOT.jar' ");
+        if(StringUtils.isBlank(traceId)){
+            traceId = UUID.randomUUID().toString().replace("-","");
         }
-        StringBuilder sb = new StringBuilder();
-        sb.append(traceId).append(":").append(rpcId);
-        return sb.toString();
+        return traceId;
     }
 
     public boolean isValid(String traceId) {
         if (StringUtils.isBlank(traceId)) {
             return false;
         }
-       return traceId.split(":").length == 2;
+        return true;
     }
 }

@@ -15,7 +15,7 @@ import com.alibaba.jvm.sandbox.repeater.plugin.domain.RecordModel;
  */
 public class SerializerWrapper {
 
-    private static SerializerProvider provider = SerializerProvider.instance();
+    public static SerializerProvider provider = SerializerProvider.instance();
 
     /**
      * 传输对象默认采用JSON序列化

@@ -59,7 +59,7 @@ public class SoloAsyncProcessor extends DefaultInvocationProcessor {
         .maximumSize(4096)
         .expireAfterWrite(30, TimeUnit.SECONDS).build();
 
-    private Map<String,Class<?>> methodReturnTypeMap = new ConcurrentHashMap<>();
+
 
     public SoloAsyncProcessor(InvokeType type) {
         super(type);
@@ -94,7 +94,11 @@ public class SoloAsyncProcessor extends DefaultInvocationProcessor {
     }
 
     public static Object getFutureResult(Future future){
-        return FUTURE_RESULT_CACHE.getIfPresent(future);
+        try {
+            return FUTURE_RESULT_CACHE.getIfPresent(future);
+        } finally {
+            FUTURE_RESULT_CACHE.invalidate(future);
+        }
     }
 
     @Override

@@ -3,7 +3,6 @@ package com.alibaba.jvm.sandbox.repeater.plugin.core.impl.api;
 import com.alibaba.jvm.sandbox.api.ProcessControlException;
 import com.alibaba.jvm.sandbox.api.event.*;
 import com.alibaba.jvm.sandbox.api.event.Event.Type;
-import com.alibaba.jvm.sandbox.api.listener.EventListener;
 import com.alibaba.jvm.sandbox.repeater.plugin.api.InvocationListener;
 import com.alibaba.jvm.sandbox.repeater.plugin.api.InvocationProcessor;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.bridge.ClassloaderBridge;
@@ -35,7 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author zhaoyb1990
  */
-public class DefaultEventListener implements EventListener {
+public class DefaultEventListener extends AbstraceEventListener {
 
     protected static Logger log = LoggerFactory.getLogger(DefaultEventListener.class);
 
@@ -142,6 +141,10 @@ public class DefaultEventListener implements EventListener {
         }
     }
 
+    private void clearProcessor(InvocationProcessor processor) {
+        processor.clear();
+    }
+
     /**
      * 处理before事件
      *
@@ -166,7 +169,6 @@ public class DefaultEventListener implements EventListener {
         invocation.setResponse(processor.assembleResponse(event));
         invocation.setSerializeToken(ClassloaderBridge.instance().encode(event.javaClassLoader));
         try {
-            // fix issue#14 : useGeneratedKeys
             if (processor.inTimeSerializeRequest(invocation, event)) {
                 SerializerWrapper.inTimeSerialize(invocation);
             }
@@ -175,6 +177,13 @@ public class DefaultEventListener implements EventListener {
             log.error("Error occurred serialize", e);
         }
         RecordCache.cacheInvocation(event.invokeId, invocation);
+    }
+
+    /**
+     * doBefore后置处理
+     */
+    protected void postProcessAfterDoBefore(BeforeEvent beforeEvent,Invocation invocation){
+
     }
 
     /**
@@ -194,6 +203,7 @@ public class DefaultEventListener implements EventListener {
      * @param event 事件
      * @return 是否采样
      */
+    @Override
     protected boolean sample(Event event) {
         if (entrance && event.type == Type.BEFORE) {
             return TraceFactory.getContext().inTimeSample(invokeType,ApplicationModel.instance().getSampleRate());
@@ -209,17 +219,24 @@ public class DefaultEventListener implements EventListener {
      * @param event return事件
      */
     protected void doReturn(ReturnEvent event) {
-        if (RepeatCache.isRepeatFlow(TraceFactory.getTraceId())) {
-            return;
+        try {
+            if (RepeatCache.isRepeatFlow(TraceFactory.getTraceId())) {
+                return;
+            }
+            Invocation invocation = RecordCache.getInvocation(event.invokeId);
+            if (invocation == null) {
+                log.debug("no valid invocation found in return,type={},traceId={}", invokeType, TraceFactory.getTraceId());
+                return;
+            }
+            invocation.setResponse(processor.assembleResponse(event));
+            invocation.setEnd(System.currentTimeMillis());
+            listener.onInvocation(invocation);
+        } finally {
+            /**
+             * 清理调用产生的中间数据
+             */
+            clearProcessor(processor);
         }
-        Invocation invocation = RecordCache.getInvocation(event.invokeId);
-        if (invocation == null) {
-            log.debug("no valid invocation found in return,type={},traceId={}", invokeType, TraceFactory.getTraceId());
-            return;
-        }
-        invocation.setResponse(processor.assembleResponse(event));
-        invocation.setEnd(System.currentTimeMillis());
-        listener.onInvocation(invocation);
     }
 
     /**
@@ -228,17 +245,24 @@ public class DefaultEventListener implements EventListener {
      * @param event throw事件
      */
     protected void doThrow(ThrowsEvent event) {
-        if (RepeatCache.isRepeatFlow(TraceFactory.getTraceId())) {
-            return;
+        try {
+            if (RepeatCache.isRepeatFlow(TraceFactory.getTraceId())) {
+                return;
+            }
+            Invocation invocation = RecordCache.getInvocation(event.invokeId);
+            if (invocation == null) {
+                log.debug("no valid invocation found in throw,type={},traceId={}", invokeType, TraceFactory.getTraceId());
+                return;
+            }
+            invocation.setThrowable(processor.assembleThrowable(event));
+            invocation.setEnd(System.currentTimeMillis());
+            listener.onInvocation(invocation);
+        } finally {
+            /**
+             * 清理调用产生的中间数据
+             */
+            clearProcessor(processor);
         }
-        Invocation invocation = RecordCache.getInvocation(event.invokeId);
-        if (invocation == null) {
-            log.debug("no valid invocation found in throw,type={},traceId={}", invokeType, TraceFactory.getTraceId());
-            return;
-        }
-        invocation.setThrowable(processor.assembleThrowable(event));
-        invocation.setEnd(System.currentTimeMillis());
-        listener.onInvocation(invocation);
     }
 
     /**

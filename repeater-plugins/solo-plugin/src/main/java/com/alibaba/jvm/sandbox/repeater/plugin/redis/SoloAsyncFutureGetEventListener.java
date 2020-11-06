@@ -9,13 +9,14 @@ import com.alibaba.jvm.sandbox.api.event.Event.Type;
 import com.alibaba.jvm.sandbox.api.event.ReturnEvent;
 import com.alibaba.jvm.sandbox.api.listener.EventListener;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.cache.RepeatCache;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.api.AbstraceEventListener;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.TraceFactory;
 
 /**
  * @author zhuangpeng
  * @since 2020/10/13
  */
-public class SoloAsyncFutureGetEventListener implements EventListener {
+public class SoloAsyncFutureGetEventListener extends AbstraceEventListener {
 
     private static final ThreadLocal<Future> FUTURE_THREAD_LOCAL = new ThreadLocal<>();
     @Override
@@ -29,10 +30,10 @@ public class SoloAsyncFutureGetEventListener implements EventListener {
                 }
             }
         }else{
-            if(event.type == Type.BEFORE){
-                BeforeEvent returnEvent = (BeforeEvent)event;
-                if(returnEvent.target instanceof Future){
-                    FUTURE_THREAD_LOCAL.set((Future)returnEvent.target);
+            if(sample(event) && event.type == Type.BEFORE){
+                BeforeEvent beforeEvent = (BeforeEvent)event;
+                if(beforeEvent.target instanceof Future){
+                    FUTURE_THREAD_LOCAL.set((Future)beforeEvent.target);
                 }
             }
 

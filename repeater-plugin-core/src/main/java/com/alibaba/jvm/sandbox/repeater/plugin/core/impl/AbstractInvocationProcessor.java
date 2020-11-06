@@ -171,4 +171,12 @@ public abstract class AbstractInvocationProcessor implements InvocationProcessor
     public boolean ignoreEvent(InvokeEvent event) {
         return false;
     }
+
+    /**
+     * 调用结束后进行一些清理操作
+     */
+    @Override
+    public void clear(){
+
+    }
 }

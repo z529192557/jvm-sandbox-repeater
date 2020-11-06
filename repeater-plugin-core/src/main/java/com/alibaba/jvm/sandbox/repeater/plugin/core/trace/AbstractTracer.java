@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractTracer implements Tracer {
 
-    private final static Logger log = LoggerFactory.getLogger(AbstractTracer.class);
+    protected final static Logger log = LoggerFactory.getLogger(AbstractTracer.class);
 
     private static ThreadLocal<TraceContext> ttlContext = new TransmittableThreadLocal<TraceContext>();
 
@@ -33,6 +33,7 @@ public abstract class AbstractTracer implements Tracer {
         }
 
         if (!isValid(traceId)) {
+            //正常traceId不由repeater框架生成
             traceId = generate();
         }
         context = new TraceContext(traceId,this);

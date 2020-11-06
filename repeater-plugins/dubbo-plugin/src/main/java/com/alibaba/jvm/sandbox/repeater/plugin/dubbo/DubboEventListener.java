@@ -9,6 +9,7 @@ import com.alibaba.jvm.sandbox.repeater.plugin.api.InvocationProcessor;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.api.DefaultEventListener;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.TraceFactory;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.util.LogUtil;
+import com.alibaba.jvm.sandbox.repeater.plugin.domain.ArsmHeader;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.DubboInvocation;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.Invocation;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.InvokeType;
@@ -37,11 +38,20 @@ public class DubboEventListener extends DefaultEventListener {
     protected void initContext(Event event) {
         if (entrance && isEntranceBegin(event)) {
             if(DubboRunTimeUtil.isAliDubbo()){
-                TraceFactory.start(RpcContext.getContext().getAttachment(Constants.REPEAT_TRACE_ID));
+                String traceId = getTraceId();
+                TraceFactory.start(traceId);
                 return;
             }
             TraceFactory.start();
         }
+    }
+
+    private String getTraceId() {
+        String traceId = RpcContext.getContext().getAttachment(Constants.REPEAT_TRACE_ID);
+        if(null == traceId){
+            traceId = RpcContext.getContext().getAttachment(ArsmHeader.EAGLEEYE_TRACE_ID.getName());
+        }
+        return traceId;
     }
 
     @Override
