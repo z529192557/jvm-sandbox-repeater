@@ -17,6 +17,11 @@ public class MockInvocation implements java.io.Serializable {
     private String currentUri;
     private Object[] originArgs;
     private Object[] currentArgs;
+    /**
+     *  currentArgs序列化
+     *  要对currentArgs进行及时序列化，因为例如mybatis框架可能会修改currentArgs的属性值
+     */
+    private String currentArgsSerialized;
 
     public int getIndex() {
         return index;
@@ -96,5 +101,13 @@ public class MockInvocation implements java.io.Serializable {
 
     public void setCurrentArgs(Object[] currentArgs) {
         this.currentArgs = currentArgs;
+    }
+
+    public String getCurrentArgsSerialized() {
+        return currentArgsSerialized;
+    }
+
+    public void setCurrentArgsSerialized(String currentArgsSerialized) {
+        this.currentArgsSerialized = currentArgsSerialized;
     }
 }

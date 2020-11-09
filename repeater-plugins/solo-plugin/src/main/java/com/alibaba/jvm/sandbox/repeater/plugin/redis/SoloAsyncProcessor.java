@@ -125,17 +125,17 @@ public class SoloAsyncProcessor extends DefaultInvocationProcessor {
             }
 
             Object mockResponse = invocation.getResponse();
-            Object packetWrapper = MethodUtils.invokeStaticMethod(packetWrapperClass,"buildWithBody",-2, invocation.getResponse());
-            MethodUtils.invokeMethod(packetWrapper,"setBody",invocation.getResponse());
-            Object nkvFuture = nkvFutureClass.newInstance();
-            ReentrantLock lock = new ReentrantLock();
-            Condition cond = lock.newCondition();
-            MethodUtils.invokeMethod(nkvFuture,"setLock",lock);
-            MethodUtils.invokeMethod(nkvFuture,"setCond",cond);
-            MethodUtils.invokeMethod(nkvFuture,"setValue",packetWrapper);
             Constructor<?> constructor = soloFutureClass.getConstructor(nkvFutureClass,Class.class);
+            Object nkvFuture = nkvFutureClass.newInstance();
             Future future = null;
             if(null != mockResponse){
+                ReentrantLock lock = new ReentrantLock();
+                Condition cond = lock.newCondition();
+                MethodUtils.invokeMethod(nkvFuture,"setLock",lock);
+                MethodUtils.invokeMethod(nkvFuture,"setCond",cond);
+                Object packetWrapper = MethodUtils.invokeStaticMethod(packetWrapperClass,"buildWithBody",-2, mockResponse);
+                MethodUtils.invokeMethod(packetWrapper,"setBody",mockResponse);
+                MethodUtils.invokeMethod(nkvFuture,"setValue",packetWrapper);
                 future = (Future)constructor.newInstance(nkvFuture,mockResponse.getClass());
                 FUTURE_RESULT_CACHE.put(future,mockResponse);
             }else{

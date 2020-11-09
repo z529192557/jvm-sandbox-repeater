@@ -19,6 +19,7 @@ import com.alibaba.jvm.sandbox.repeater.plugin.spi.InvokePlugin;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -134,7 +135,8 @@ public abstract class AbstractInvokePluginAdapter implements InvokePlugin {
                 if (behavior != null) {
                     int watchId = behavior.onWatch(getEventListener(listener), em.getWatchTypes()).getWatchId();
                     watchIds.add(watchId);
-                    log.info("add watcher success,type={},watcherId={}", getType().name(), watchId);
+                    log.info("add watcher success,type={},{},watcherId={}", getType().name(),
+                        em.toString(),watchId);
                 }
             }
         }

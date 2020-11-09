@@ -1,6 +1,8 @@
 package com.alibaba.jvm.sandbox.repeater.plugin.core.impl;
 
 import com.alibaba.jvm.sandbox.repeater.plugin.core.cache.RepeatCache;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.serialize.Serializer.Type;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.serialize.SerializerProvider;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.SequenceGenerator;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.Invocation;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.MockInvocation;
@@ -49,6 +51,8 @@ public abstract class AbstractMockStrategy implements MockStrategy {
             mi.setIndex(SequenceGenerator.generate(request.getTraceId() + "#"));
             mi.setCurrentUri(request.getIdentity().getUri());
             mi.setCurrentArgs(request.getArgumentArray());
+            //要对curentArgs进行立即序列化
+            mi.setCurrentArgsSerialized(SerializerProvider.instance().provide(Type.HESSIAN).serialize2String(request.getArgumentArray()));
             mi.setTraceId(request.getTraceId());
             mi.setCost(select.getCost());
             mi.setRepeatId(request.getRepeatId());

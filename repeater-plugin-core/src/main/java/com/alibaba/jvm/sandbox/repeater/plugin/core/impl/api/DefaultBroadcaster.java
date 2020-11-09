@@ -28,17 +28,17 @@ public class DefaultBroadcaster extends AbstractBroadcaster {
     /**
      * 录制消息投递的URL
      */
-    private String broadcastRecordUrl = PropertyUtil.getPropertyOrDefault(Constants.DEFAULT_RECORD_BROADCASTER, "");
+    protected String broadcastRecordUrl = PropertyUtil.getPropertyOrDefault(Constants.DEFAULT_RECORD_BROADCASTER, "");
 
     /**
      * 回放消息投递URL
      */
-    private String broadcastRepeatUrl = PropertyUtil.getPropertyOrDefault(Constants.DEFAULT_REPEAT_BROADCASTER, "");
+    protected String broadcastRepeatUrl = PropertyUtil.getPropertyOrDefault(Constants.DEFAULT_REPEAT_BROADCASTER, "");
 
     /**
      * 回放消息拉取URL
      */
-    private String pullRecordUrl = PropertyUtil.getPropertyOrDefault(Constants.DEFAULT_REPEAT_DATASOURCE, "");
+    protected String pullRecordUrl = PropertyUtil.getPropertyOrDefault(Constants.DEFAULT_REPEAT_DATASOURCE, "");
 
 
     public void setBroadcastRecordUrl(String broadcastRecordUrl) {

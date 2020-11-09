@@ -11,6 +11,7 @@ import com.alibaba.jvm.sandbox.repeater.plugin.domain.DubboInvocation;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.Invocation;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.InvokeType;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeatContext;
+import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterConfig;
 import com.alibaba.jvm.sandbox.repeater.plugin.dubbo.DubboMetaConfig.DubboMetaConfigBuilder;
 import com.alibaba.jvm.sandbox.repeater.plugin.exception.RepeatException;
 import com.alibaba.jvm.sandbox.repeater.plugin.spi.Repeater;
@@ -366,6 +367,18 @@ public class DubboRepeater extends AbstractRepeater {
 
     @Override
     public String identity() {
-        return "dubbo";
+        return "dubbo,ali-dubbo";
     }
+
+    @Override
+    public boolean enable(RepeaterConfig config) {
+       String[] identities = identity().split(",");
+       for(int i = 0; i < identities.length ; i++){
+           if(config != null && config.getRepeatIdentities().contains(identities[i])){
+               return Boolean.TRUE;
+           }
+       }
+        return Boolean.FALSE;
+    }
+
 }

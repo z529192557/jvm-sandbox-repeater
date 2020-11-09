@@ -12,6 +12,7 @@ import com.alibaba.jvm.sandbox.repeater.plugin.domain.TraceContext;
 import com.alibaba.jvm.sandbox.repeater.plugin.spi.Repeater;
 
 import com.google.common.base.Stopwatch;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +37,10 @@ public abstract class AbstractRepeater implements Repeater {
         RepeatModel record = new RepeatModel();
         record.setRepeatId(context.getMeta().getRepeatId());
         record.setTraceId(context.getTraceId());
+        if(StringUtils.isBlank(record.getRepeatId())){
+            record.setRepeatId(record.getTraceId());
+        }
+        record.setOriginResponse(context.getRecordModel().getEntranceInvocation().getResponse());
         try {
             // before invoke advice
             RepeatInterceptorFacade.instance().beforeInvoke(context.getRecordModel());

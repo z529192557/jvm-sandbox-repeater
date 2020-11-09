@@ -6,6 +6,7 @@ import com.alibaba.jvm.sandbox.api.listener.ext.EventWatchBuilder.IBuildingForCl
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.Behavior;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.beans.ConstructorProperties;
 import java.util.Arrays;
@@ -82,6 +83,26 @@ public class EnhanceModel {
 
     public EnhanceModel.MethodPattern[] getMethodPatterns() {
         return this.methodPatterns;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("class={");
+        stringBuilder.append(this.classPattern);
+        stringBuilder.append("},");
+        stringBuilder.append("methods={");
+        MethodPattern[] methodPattern = this.methodPatterns;
+        if(null != methodPattern && methodPattern.length > 0){
+            for(int i = 0 ; i < methodPattern.length ; i++){
+                stringBuilder.append(methodPatterns[i].methodName);
+                if(i != methodPattern.length-1){
+                    stringBuilder.append(",");
+                }
+            }
+        }
+        stringBuilder.append("}");
+        return stringBuilder.toString();
     }
 
     public Type[] getWatchTypes() {

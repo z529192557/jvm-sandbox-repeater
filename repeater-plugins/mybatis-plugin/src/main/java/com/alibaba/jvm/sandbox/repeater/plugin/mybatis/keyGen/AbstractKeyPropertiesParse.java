@@ -27,7 +27,7 @@ public abstract class AbstractKeyPropertiesParse implements KeyPropertiesParse{
             Object realParam = param;
 
             if(param instanceof Object[] && ((Object[])param).length > 1){
-                log.debug("unsupport mock key generator for multiple param, maybe support for futrue");
+                log.debug("unsupport mock insert key generator for multiple param, maybe support for futrue");
                 return maps;
             }else if(param instanceof  Object[]){
                 realParam = ((Object[])param)[0];
@@ -35,7 +35,7 @@ public abstract class AbstractKeyPropertiesParse implements KeyPropertiesParse{
 
             for(int i = 0; i < keyPropertise.length ; i++){
                 if(keyPropertise[i].indexOf('.') != -1){
-                    log.debug("unsupport mock key generator for {}, maybe support for futrur",keyPropertise[i]);
+                    log.debug("unsupport mock insert key generator for {}, maybe support for futrur",keyPropertise[i]);
                     continue;
                 }
 
@@ -62,7 +62,7 @@ public abstract class AbstractKeyPropertiesParse implements KeyPropertiesParse{
        if(null != key2Value && !key2Value.isEmpty()){
            Object realParam = param;
            if(param instanceof Object[] && ((Object[])param).length > 1){
-               log.debug("unsupport mock key generator for multiple param, maybe support for futrue");
+               log.debug("unsupport mock insert key generator for multiple param, maybe support for futrue");
                return;
            }else if(param instanceof  Object[]){
                realParam = ((Object[])param)[0];

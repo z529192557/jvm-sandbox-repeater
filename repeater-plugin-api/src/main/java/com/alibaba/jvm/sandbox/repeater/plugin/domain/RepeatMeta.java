@@ -41,7 +41,6 @@ public class RepeatMeta implements java.io.Serializable {
      * 回放数据源；服务端可指定module从何处加载回放数据源；http接口
      */
     private String datasource;
-
     /**
      * 调用超时时间
      */
