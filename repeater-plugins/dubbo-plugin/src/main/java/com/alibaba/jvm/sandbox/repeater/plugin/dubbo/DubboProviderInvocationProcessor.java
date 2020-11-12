@@ -66,7 +66,7 @@ class DubboProviderInvocationProcessor extends DubboConsumerInvocationProcessor 
         if(null == dubboEntrancePatterns || dubboEntrancePatterns.size() == 0){
             return false;
         }
-        String classMethod = interfaceName + "." + methodName;
+        String classMethod = interfaceName + "#" + methodName;
 
         if(dubboEntrancePatterns.contains(classMethod)){
             return true;
