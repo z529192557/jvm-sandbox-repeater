@@ -59,8 +59,6 @@ public class RepeatSubscribeSupporter implements SubscribeSupporter<RepeatEvent>
             }
             log.info("subscribe success params={}", req);
             final RepeatMeta meta = SerializerWrapper.hessianDeserialize(data, RepeatMeta.class);
-            meta.setMock(true);
-            meta.setStrategyType(StrategyType.DEFAULT);
             RepeaterResult<RecordModel> pr = StandaloneSwitch.instance().getBroadcaster().pullRecord(meta);
             if (pr.isSuccess()){
                 DefaultFlowDispatcher.instance().dispatch(meta, pr.getData());

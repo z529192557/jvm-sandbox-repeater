@@ -59,6 +59,16 @@ public class RepeaterConfig implements java.io.Serializable{
     private List<String> httpEntrancePatterns = Lists.newArrayList();
 
     /**
+     * 是否启用dubbo白名单方式进行录制
+     */
+    public boolean dubboWhiteInterfaceMode;
+    /**
+     *  dubbo接口白名单
+     */
+    private List<String> dubboEntrancePatterns = Lists.newArrayList();
+
+
+    /**
      * java入口插件动态增强的行为
      */
     private List<Behavior> javaEntranceBehaviors = Lists.newArrayList();
@@ -196,6 +206,22 @@ public class RepeaterConfig implements java.io.Serializable{
 
     public void setEnvAware(String envAware) {
         this.envAware = envAware;
+    }
+
+    public List<String> getDubboEntrancePatterns() {
+        return dubboEntrancePatterns;
+    }
+
+    public void setDubboEntrancePatterns(List<String> dubboEntrancePatterns) {
+        this.dubboEntrancePatterns = dubboEntrancePatterns;
+    }
+
+    public boolean isDubboWhiteInterfaceMode() {
+        return dubboWhiteInterfaceMode;
+    }
+
+    public void setDubboWhiteInterfaceMode(boolean dubboWhiteInterfaceMode) {
+        this.dubboWhiteInterfaceMode = dubboWhiteInterfaceMode;
     }
 
     @Override
