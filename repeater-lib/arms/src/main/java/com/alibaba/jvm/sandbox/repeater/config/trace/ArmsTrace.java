@@ -25,7 +25,7 @@ public class ArmsTrace extends AbstractTracer {
 
     @Override
     public Long getSampleBit(String traceId) {
-        return this.isValid(traceId) ? traceId.hashCode() : 9999L;
+        return this.isValid(traceId) ? Math.abs(traceId.hashCode()) : 9999L;
     }
 
     public String generate() {
