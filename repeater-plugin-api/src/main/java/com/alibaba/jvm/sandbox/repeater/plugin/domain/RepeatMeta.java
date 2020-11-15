@@ -28,6 +28,10 @@ public class RepeatMeta implements java.io.Serializable {
     /**
      * 子调用匹配查找策略，开启mock回放后生效
      */
+    private String strategy;
+    /**
+     * 子调用匹配查找策略，开启mock回放后生效
+     */
     private StrategyType strategyType;
     /**
      * 回放ID
@@ -41,6 +45,11 @@ public class RepeatMeta implements java.io.Serializable {
      * 回放数据源；服务端可指定module从何处加载回放数据源；http接口
      */
     private String datasource;
+
+    /**
+     * 回放结果通知 url
+     */
+    private String replayNotifyUrl;
     /**
      * 调用超时时间
      */
@@ -70,6 +79,14 @@ public class RepeatMeta implements java.io.Serializable {
 
     public void setMock(boolean mock) {
         this.mock = mock;
+    }
+
+    public String getStrategy() {
+        return strategy;
+    }
+
+    public void setStrategy(String strategy) {
+        this.strategy = strategy;
     }
 
     public StrategyType getStrategyType() {
@@ -118,5 +135,13 @@ public class RepeatMeta implements java.io.Serializable {
 
     public void setTimeout(Integer timeout) {
         this.timeout = timeout;
+    }
+
+    public String getReplayNotifyUrl() {
+        return replayNotifyUrl;
+    }
+
+    public void setReplayNotifyUrl(String replayNotifyUrl) {
+        this.replayNotifyUrl = replayNotifyUrl;
     }
 }

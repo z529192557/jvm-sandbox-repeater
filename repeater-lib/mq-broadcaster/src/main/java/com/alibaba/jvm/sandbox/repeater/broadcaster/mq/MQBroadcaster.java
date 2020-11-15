@@ -1,8 +1,11 @@
 package com.alibaba.jvm.sandbox.repeater.broadcaster.mq;
 
+import java.util.HashMap;
 import java.util.List;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.alibaba.jvm.sandbox.repeater.plugin.Constants;
 import com.alibaba.jvm.sandbox.repeater.plugin.annotation.ConfigActive;
@@ -12,6 +15,7 @@ import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.api.DefaultBroadcaster;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.model.ApplicationModel;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.serialize.SerializeException;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.util.HttpUtil;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.util.HttpUtil.Resp;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.wrapper.RecordWrapper;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.wrapper.SerializerWrapper;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.Invocation;
@@ -20,6 +24,7 @@ import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeatMeta;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeatModel;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterResult;
 
+import com.google.common.collect.Maps;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.MetaInfServices;
@@ -53,7 +58,21 @@ public class MQBroadcaster extends DefaultBroadcaster {
     @Override
     protected void broadcastRepeat(RepeatModel record) {
         try {
+
             String body = SerializerWrapper.hessianSerialize(record);
+            String url = record.getRepeatMeta().getReplayNotifyUrl();
+            String traceId = record.getTraceId();
+            if(StringUtils.isNotBlank(url)){
+                HashMap<String, String> headers = Maps.newHashMap();
+                headers.put("content-type", "application/json");
+                Resp resp = HttpUtil.invokePostBody(url, headers, body);
+                if (resp.isSuccess()) {
+                    log.info("broadcast success,traceId={},resp={}", traceId, resp);
+                } else {
+                    log.info("broadcast failed ,traceId={},resp={}", traceId, resp);
+                }
+                return;
+            }
             MetaQConfig metaQConfig = MetaQConfig.getReplayConfig(ApplicationModel.instance().getConfig());
             MetaQInstance.getInstance().send(metaQConfig.getTopic(),metaQConfig.getTag(),record.getTraceId(),body.getBytes());
         } catch (Throwable throwable) {

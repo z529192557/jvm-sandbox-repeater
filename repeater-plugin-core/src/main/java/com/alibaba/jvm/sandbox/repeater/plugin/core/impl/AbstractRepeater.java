@@ -35,6 +35,7 @@ public abstract class AbstractRepeater implements Repeater {
         context.setTraceId(traceContext.getTraceId());
         RepeatCache.putRepeatContext(context);
         RepeatModel record = new RepeatModel();
+        record.setRepeatMeta(context.getMeta());
         record.setRepeatId(context.getMeta().getRepeatId());
         record.setTraceId(context.getTraceId());
         if(StringUtils.isBlank(record.getRepeatId())){

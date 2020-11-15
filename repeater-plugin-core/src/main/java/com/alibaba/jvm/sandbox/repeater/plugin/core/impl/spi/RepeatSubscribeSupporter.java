@@ -58,7 +58,9 @@ public class RepeatSubscribeSupporter implements SubscribeSupporter<RepeatEvent>
                 return;
             }
             log.info("subscribe success params={}", req);
+
             final RepeatMeta meta = SerializerWrapper.hessianDeserialize(data, RepeatMeta.class);
+            parseMeta(meta);
             RepeaterResult<RecordModel> pr = StandaloneSwitch.instance().getBroadcaster().pullRecord(meta);
             if (pr.isSuccess()){
                 DefaultFlowDispatcher.instance().dispatch(meta, pr.getData());
@@ -69,6 +71,16 @@ public class RepeatSubscribeSupporter implements SubscribeSupporter<RepeatEvent>
             log.error("serialize failed, req={}", req, e);
         } catch (Exception e) {
             log.error("[Error-0000]-uncaught exception occurred when register repeat event, req={}", req, e);
+        }
+    }
+
+    private void parseMeta(RepeatMeta meta) {
+        if(null == meta.getStrategyType()){
+            if(StringUtils.isNotBlank(meta.getStrategy())){
+                meta.setStrategyType(StrategyType.valueOf(meta.getStrategy()));
+            }else{
+                meta.setStrategyType(StrategyType.DEFAULT);
+            }
         }
     }
 }

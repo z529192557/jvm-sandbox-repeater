@@ -1,5 +1,6 @@
 package com.alibaba.jvm.sandbox.repeater.plugin.dubbo;
 
+import com.alibaba.dubbo.common.utils.NetUtils;
 import com.alibaba.dubbo.rpc.RpcContext;
 import com.alibaba.jvm.sandbox.repeater.plugin.Constants;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.bridge.ClassloaderBridge;
@@ -115,10 +116,6 @@ public class DubboRepeater extends AbstractRepeater {
 
         String recordServiceName = getServiceName(dubboInvocation);
         DubboMetaConfigBuilder builder = DubboMetaConfig.getBuilder();
-        String group = null;
-        String version = null;
-        String port = null;
-
         //1. 先从配置拿
         getDubboMetaFromExtension(context,builder);
 
@@ -260,9 +257,11 @@ public class DubboRepeater extends AbstractRepeater {
     }
 
     private String buildDubboUrl(String port,String group) {
+        String ip = NetUtils.getLocalHost();
         StringBuilder urlBuilder = new StringBuilder();
         urlBuilder.append("dubbo://");
-        urlBuilder.append("127.0.0.1:");
+        urlBuilder.append(ip);
+        urlBuilder.append(":");
         urlBuilder.append(port);
         urlBuilder.append("?");
         urlBuilder.append("group=");

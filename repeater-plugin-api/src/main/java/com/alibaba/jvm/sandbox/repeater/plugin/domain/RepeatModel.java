@@ -27,6 +27,8 @@ public class RepeatModel implements java.io.Serializable {
 
     private List<MockInvocation> mockInvocations;
 
+    private transient RepeatMeta repeatMeta;
+
     public String getRepeatId() {
         return repeatId;
     }
@@ -89,5 +91,13 @@ public class RepeatModel implements java.io.Serializable {
 
     public void setMockInvocations(List<MockInvocation> mockInvocations) {
         this.mockInvocations = mockInvocations;
+    }
+
+    public RepeatMeta getRepeatMeta() {
+        return repeatMeta;
+    }
+
+    public void setRepeatMeta(RepeatMeta repeatMeta) {
+        this.repeatMeta = repeatMeta;
     }
 }

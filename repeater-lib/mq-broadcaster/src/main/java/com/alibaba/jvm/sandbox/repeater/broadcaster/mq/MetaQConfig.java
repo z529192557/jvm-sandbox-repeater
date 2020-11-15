@@ -53,7 +53,7 @@ public class MetaQConfig {
     public static MetaQConfig getReplayConfig(RepeaterConfig config) {
         MetaQConfig metaQConfig = new MetaQConfig();
         metaQConfig.setTopic(getMetaConfigValue(config,MessageConfig.METAQ_REPLAY_BROADCASTER_TOPIC,MessageConfig.DEFAULT_TOPIC_NAME));
-        metaQConfig.setTopic(getMetaConfigValue(config,MessageConfig.METAQ_REPLAY_BROADCASTER_TAG,MessageConfig.DEFAULT_REPLAY_TAG_NAME));
+        metaQConfig.setTag(getMetaConfigValue(config,MessageConfig.METAQ_REPLAY_BROADCASTER_TAG,MessageConfig.DEFAULT_REPLAY_TAG_NAME));
         return metaQConfig;
     }
 
