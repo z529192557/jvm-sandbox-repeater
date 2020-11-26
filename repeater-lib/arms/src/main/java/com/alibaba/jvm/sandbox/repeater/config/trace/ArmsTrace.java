@@ -1,6 +1,7 @@
 package com.alibaba.jvm.sandbox.repeater.config.trace;
 import java.util.UUID;
 
+import com.alibaba.arms.tracing.Span;
 import com.alibaba.arms.tracing.Tracer;
 import com.alibaba.jvm.sandbox.repeater.plugin.Constants;
 import com.alibaba.jvm.sandbox.repeater.plugin.annotation.ConfigActive;
@@ -19,9 +20,7 @@ import org.kohsuke.MetaInfServices;
 @MetaInfServices(com.alibaba.jvm.sandbox.repeater.plugin.api.Tracer.class)
 public class ArmsTrace extends AbstractTracer {
 
-    private static ThreadLocal<TraceContext> ttlContext = new TransmittableThreadLocal<TraceContext>();
-
-    private static ThreadLocal<TraceContext> normalContext = new ThreadLocal<TraceContext>();
+    private static ThreadLocal<Boolean> NEW_ARMS_TRACE = new ThreadLocal<Boolean>();
 
     @Override
     public Long getSampleBit(String traceId) {
@@ -31,7 +30,12 @@ public class ArmsTrace extends AbstractTracer {
     public String generate() {
         String traceId = Tracer.builder().getSpan().getTraceId();
         if(StringUtils.isBlank(traceId)){
-            traceId = UUID.randomUUID().toString().replace("-","");
+            Tracer.builder().startRpc(new Span());
+            NEW_ARMS_TRACE.set(true);
+            traceId = Tracer.builder().getSpan().getTraceId();
+            if(StringUtils.isBlank(traceId)){
+                traceId = UUID.randomUUID().toString().replace("-","");;
+            }
         }
         return traceId;
     }
@@ -42,4 +46,13 @@ public class ArmsTrace extends AbstractTracer {
         }
         return true;
     }
+
+    @Override
+    public void end() {
+        super.end();
+        if(null != NEW_ARMS_TRACE.get() && NEW_ARMS_TRACE.get()){
+            Tracer.builder().endRpc();
+        }
+    }
+
 }

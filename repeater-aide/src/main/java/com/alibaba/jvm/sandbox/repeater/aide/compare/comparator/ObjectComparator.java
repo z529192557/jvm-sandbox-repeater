@@ -59,6 +59,19 @@ public class ObjectComparator implements Comparator {
      * @param comparator integrated comparator
      */
     private void innerCompare(Class<?> clazz, Object left, Object right, List<Path> paths, IntegratedComparator comparator) {
+
+        //对象有自己实现Comparable，则优先使用Comparable,相同则直接返回
+        if(left instanceof java.lang.Comparable && right instanceof java.lang.Comparable){
+            if(0 == ((java.lang.Comparable)left).compareTo(right)){
+                return;
+            }
+        }
+        //对象有自己实现equals，则优先使用quest,相同则直接返回
+        if(left.equals(right)){
+            return;
+        }
+
+        //都没有，则一步步比较Field
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
             if (field.isSynthetic() || isTransient(field.getModifiers()) || isStatic(field.getModifiers())) {

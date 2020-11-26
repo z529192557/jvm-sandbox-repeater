@@ -5,6 +5,7 @@ import com.alibaba.jvm.sandbox.api.event.BeforeEvent;
 import com.alibaba.jvm.sandbox.api.event.Event;
 import com.alibaba.jvm.sandbox.api.event.InvokeEvent;
 import com.alibaba.jvm.sandbox.api.event.ReturnEvent;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.cache.RecordCache;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.cache.RepeatCache;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.api.DefaultInvocationProcessor;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.util.LogUtil;
@@ -31,6 +32,7 @@ class DubboConsumerInvocationProcessor extends DefaultInvocationProcessor {
     private static final String INVOKE = "invoke";
 
     private Set<Integer> ignoreInvokeSet = new HashSet<Integer>(128);
+
 
     DubboConsumerInvocationProcessor(InvokeType type) {
         super(type);
@@ -139,19 +141,28 @@ class DubboConsumerInvocationProcessor extends DefaultInvocationProcessor {
 
     @Override
     public boolean ignoreEvent(InvokeEvent event) {
-        if (event.type == Event.Type.BEFORE && !DubboRunTimeUtil.isAliDubbo()) {
-            BeforeEvent be = (BeforeEvent) event;
-            String methodName = be.javaMethodName;
-            // 回放流量忽略onResponse，非回放流量忽略invoke方法
-            boolean ignore = RepeatCache.isRepeatFlow()
+        if(DubboRunTimeUtil.isAliDubbo()){
+            if (event.type == Event.Type.BEFORE && RepeatCache.isRepeatFlow()) {
+                //如果是回放的入口直接忽略
+                Identity identity = assembleIdentity((BeforeEvent)event);
+                return RepeatCache.isReplayEntrance(identity);
+            }
+            return false;
+        }else{
+            if (event.type == Event.Type.BEFORE) {
+                BeforeEvent be = (BeforeEvent) event;
+                String methodName = be.javaMethodName;
+                // 回放流量忽略onResponse，非回放流量忽略invoke方法
+                boolean ignore = RepeatCache.isRepeatFlow()
                     ? ON_RESPONSE.equals(methodName)
                     : INVOKE.equals(methodName);
-            if (ignore) {
-                ignoreInvokeSet.add(be.invokeId);
+                if (ignore) {
+                    ignoreInvokeSet.add(be.invokeId);
+                }
+                return ignore;
+            } else {
+                return ignoreInvokeSet.remove(event.invokeId);
             }
-            return ignore;
-        } else {
-            return ignoreInvokeSet.remove(event.invokeId);
         }
     }
 }

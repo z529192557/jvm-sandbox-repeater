@@ -31,7 +31,8 @@ public class ReflectCompareStrategy extends AbstractMockStrategy {
         final List<Invocation> subInvocations = request.getRecordModel().getSubInvocations();
         Stopwatch stopwatch = Stopwatch.createStarted();
         if (CollectionUtils.isEmpty(subInvocations)) {
-            return null;
+            log.error("sub invocation is empty, strategy={}, identity={}", type().name(), request.getIdentity().getUri());
+            return SelectResult.builder().match(false).cost(stopwatch.stop().elapsed(TimeUnit.MILLISECONDS)).build();
         }
         Object[] current = request.getArgumentArray();
         java.util.List<Invocation> target = Lists.newArrayList();

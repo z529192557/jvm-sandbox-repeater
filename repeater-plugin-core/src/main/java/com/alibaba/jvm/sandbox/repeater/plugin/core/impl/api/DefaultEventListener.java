@@ -69,6 +69,7 @@ public class DefaultEventListener extends AbstraceEventListener {
             /*
              * event过滤；针对单个listener，只处理top的事件
              */
+
             if (!isTopEvent(event)) {
                 if (log.isDebugEnabled()) {
                     log.debug("not top event ,type={},event={},offset={}", invokeType, event, eventOffset.get().get());
@@ -205,6 +206,13 @@ public class DefaultEventListener extends AbstraceEventListener {
      */
     @Override
     protected boolean sample(Event event) {
+        /**
+         * 回放流量直接放过
+         */
+        if(RepeatCache.isRepeatFlow(TraceFactory.getTraceId())){
+            return true;
+        }
+
         if (entrance && event.type == Type.BEFORE) {
             return TraceFactory.getContext().inTimeSample(invokeType,ApplicationModel.instance().getSampleRate());
         } else {

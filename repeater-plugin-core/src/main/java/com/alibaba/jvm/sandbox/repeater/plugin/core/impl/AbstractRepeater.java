@@ -64,6 +64,7 @@ public abstract class AbstractRepeater implements Repeater {
         sendRepeat(record);
     }
 
+
     @Override
     public boolean enable(RepeaterConfig config) {
         return config != null && config.getRepeatIdentities().contains(identity());

@@ -11,6 +11,7 @@ import com.alibaba.jvm.sandbox.api.event.Event.Type;
 import com.alibaba.jvm.sandbox.api.event.InvokeEvent;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.cache.RepeatCache;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.model.ApplicationModel;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.TraceFactory;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.InvokeType;
 
 import org.apache.commons.lang3.StringUtils;
@@ -50,6 +51,8 @@ class DubboProviderInvocationProcessor extends DubboConsumerInvocationProcessor 
 
                 if(ApplicationModel.instance().getConfig().dubboWhiteInterfaceMode){
                     if(!match(interfaceName,methodName,ApplicationModel.instance().getConfig().getDubboEntrancePatterns())){
+                        //入口未匹配白名单，直接提前终止
+                        TraceFactory.end();
                         return true;
                     }
                 }

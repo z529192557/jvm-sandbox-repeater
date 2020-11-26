@@ -1,12 +1,20 @@
 package com.alibaba.jvm.sandbox.repeater.plugin.core.eventbus;
 
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor.CallerRunsPolicy;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.SubscribeEvent;
+import com.alibaba.ttl.TtlRunnable;
+
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
@@ -29,7 +37,7 @@ public class EventBusInner {
         Runtime.getRuntime().availableProcessors() - 1,
         2 * Runtime.getRuntime().availableProcessors(), 30L, TimeUnit.MILLISECONDS,
         new LinkedBlockingDeque<Runnable>(4096),
-        new BasicThreadFactory.Builder().namingPattern("repeat-task-pool-%d").build(),
+        new BasicThreadFactory.Builder().wrappedFactory(new DefaultThreadFactory()).namingPattern("repeat-task-pool-%d").build(),
         new CallerRunsPolicy());
 
     private static final EventBus eventBus = new AsyncEventBus("repeater-repeat-executor", executor);
@@ -56,4 +64,31 @@ public class EventBusInner {
         }
     }
 
+    static class DefaultThreadFactory implements ThreadFactory {
+        private static final AtomicInteger poolNumber = new AtomicInteger(1);
+        private final ThreadGroup group;
+        private final AtomicInteger threadNumber = new AtomicInteger(1);
+        private final String namePrefix;
+
+        DefaultThreadFactory() {
+            SecurityManager s = System.getSecurityManager();
+            group = (s != null) ? s.getThreadGroup() :
+                Thread.currentThread().getThreadGroup();
+            namePrefix = "pool-" +
+                poolNumber.getAndIncrement() +
+                "-thread-";
+        }
+
+        public Thread newThread(Runnable r) {
+            Thread t = new Thread(group, r,
+                namePrefix + threadNumber.getAndIncrement(),
+                0);
+            if (t.isDaemon())
+                t.setDaemon(false);
+            if (t.getPriority() != Thread.NORM_PRIORITY)
+                t.setPriority(Thread.NORM_PRIORITY);
+
+            return t;
+        }
+    }
 }

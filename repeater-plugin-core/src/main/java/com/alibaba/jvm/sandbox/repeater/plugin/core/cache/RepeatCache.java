@@ -5,6 +5,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.TraceFactory;
+import com.alibaba.jvm.sandbox.repeater.plugin.domain.Identity;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.MockInvocation;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RecordModel;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeatContext;
@@ -44,6 +45,17 @@ public class RepeatCache {
             @Override
             public List<MockInvocation> load(String s) throws Exception {
                 return Lists.newArrayList();
+            }
+        });
+
+    public static final LoadingCache<String, String> DUBBO_REPLAY_ENTRANCE= CacheBuilder
+        .newBuilder()
+        .maximumSize(4096L)
+        .expireAfterAccess(128L, TimeUnit.SECONDS)
+        .build(new CacheLoader<String, String>() {
+            @Override
+            public String load(String key) throws Exception {
+                return "-";
             }
         });
 
@@ -102,4 +114,25 @@ public class RepeatCache {
     public static List<MockInvocation> getMockInvocation(String traceId) {
         return MOCK_INVOCATION_CONTEXT.getIfPresent(traceId);
     }
+
+    /**
+     * 判断当前请求是否是回放流量入口
+     *
+     * @param identity identity
+     * @return 是否回放流量
+     */
+    public static boolean isReplayEntrance(Identity identity) {
+        return StringUtils.equals(DUBBO_REPLAY_ENTRANCE.getIfPresent(TraceFactory.getTraceId()), identity.getUri());
+    }
+
+    /**
+     * 判断当前请求是否是回放流量入口
+     *
+     * @param identity identity
+     * @return 是否回放流量
+     */
+    public static void putReplayEntrance(Identity identity) {
+        DUBBO_REPLAY_ENTRANCE.put(TraceFactory.getTraceId(),identity.getUri());
+    }
+
 }

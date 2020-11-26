@@ -37,6 +37,12 @@ public class ParameterMatchMockStrategy extends AbstractMockStrategy {
     protected SelectResult select(MockRequest request) {
         Stopwatch stopwatch = Stopwatch.createStarted();
         List<Invocation> subInvocations = request.getRecordModel().getSubInvocations();
+
+        if (CollectionUtils.isEmpty(subInvocations)) {
+            log.error("sub invocation is empty, strategy={}, identity={}", type().name(), request.getIdentity().getUri());
+            return SelectResult.builder().match(false).cost(stopwatch.stop().elapsed(TimeUnit.MILLISECONDS)).build();
+        }
+
         List<Invocation> target = Lists.newArrayList();
         // 先根据URI进行过滤
         if (CollectionUtils.isNotEmpty(subInvocations)) {
