@@ -5,6 +5,8 @@ import com.alibaba.jvm.sandbox.api.event.*;
 import com.alibaba.jvm.sandbox.api.event.Event.Type;
 import com.alibaba.jvm.sandbox.repeater.plugin.api.InvocationProcessor;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.cache.RepeatCache;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.mock.DefaultMockFilterHandler;
+import com.alibaba.jvm.sandbox.repeater.plugin.core.impl.mock.MockFilterHandler;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.SequenceGenerator;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.trace.TraceFactory;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.Identity;
@@ -26,6 +28,12 @@ import java.util.Map;
  */
 public abstract class AbstractInvocationProcessor implements InvocationProcessor {
 
+    protected MockFilterHandler mockFilterHandler;
+
+    public AbstractInvocationProcessor(){
+        this.mockFilterHandler = new DefaultMockFilterHandler();
+    }
+
     @Override
     public Object[] assembleRequest(BeforeEvent event) {
         return event.argumentArray;
@@ -44,6 +52,7 @@ public abstract class AbstractInvocationProcessor implements InvocationProcessor
     public Throwable assembleThrowable(ThrowsEvent event) {
         return event.throwable;
     }
+
 
     @Override
     public void doMock(BeforeEvent event, Boolean entrance, InvokeType type) throws ProcessControlException {
@@ -164,7 +173,18 @@ public abstract class AbstractInvocationProcessor implements InvocationProcessor
      * @return 是否跳过
      */
     protected boolean skipMock(BeforeEvent event, Boolean entrance, RepeatContext context) {
-        return entrance;
+        if(entrance){
+            return true;
+        }
+        /**
+         * 当期调用identify
+         */
+        Identity identity = this.assembleIdentity(event);
+        return skipMockFromReplayConfig(identity,context);
+    }
+
+    protected boolean skipMockFromReplayConfig(Identity currentIdentity, RepeatContext context){
+        return !mockFilterHandler.needMock(currentIdentity,context);
     }
 
     @Override

@@ -18,11 +18,14 @@ public class SelectResult {
 
     private Long cost;
 
+    private boolean exceptionMock;
+
     @ConstructorProperties({"match", "invocation", "cost"})
-    SelectResult(boolean match, Invocation invocation, Long cost) {
+    SelectResult(boolean match, Invocation invocation, Long cost,boolean exceptionMock) {
         this.match = match;
         this.invocation = invocation;
         this.cost = cost;
+        this.exceptionMock = false;
     }
 
     public static SelectResult.SelectResultBuilder builder() {
@@ -41,10 +44,23 @@ public class SelectResult {
         return this.cost;
     }
 
+    public void setMatch(boolean match) {
+        this.match = match;
+    }
+
+    public boolean isExceptionMock() {
+        return exceptionMock;
+    }
+
+    public void setExceptionMock(boolean exceptionMock) {
+        this.exceptionMock = exceptionMock;
+    }
+
     public static class SelectResultBuilder {
         private boolean match;
         private Invocation invocation;
         private Long cost;
+        private boolean exceptionMock;
 
         SelectResultBuilder() {
         }
@@ -64,8 +80,13 @@ public class SelectResult {
             return this;
         }
 
+        public SelectResult.SelectResultBuilder mockExcepiton() {
+            this.exceptionMock = true;
+            return this;
+        }
+
         public SelectResult build() {
-            return new SelectResult(this.match, this.invocation, this.cost);
+            return new SelectResult(this.match, this.invocation, this.cost,this.exceptionMock);
         }
 
         @Override

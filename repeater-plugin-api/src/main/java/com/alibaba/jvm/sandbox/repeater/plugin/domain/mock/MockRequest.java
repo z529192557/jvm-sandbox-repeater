@@ -7,10 +7,11 @@ import java.util.Set;
 import com.alibaba.jvm.sandbox.api.event.BeforeEvent;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.Identity;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.InvokeType;
+import com.alibaba.jvm.sandbox.repeater.plugin.domain.MockType;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RecordModel;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeatMeta;
 
-
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * <p>
@@ -134,6 +135,42 @@ public class MockRequest {
 
     public void setModifiedInvocationIdentity(Set<Identity> modifiedInvocationIdentity) {
         this.modifiedInvocationIdentity = modifiedInvocationIdentity;
+    }
+
+    public boolean hasMockExceptionConfig(){
+        if(null != this.meta
+            && null != this.meta.getReplayStrategy()
+            && null != this.meta.getReplayStrategy().getMockConfig()
+            && null != this.meta.getReplayStrategy().getMockConfig().getMockType()
+            && MockType.EXCEPTION_MOCK.equals(this.meta.getReplayStrategy().getMockConfig().getMockType())
+            && StringUtils.isNotBlank(this.meta.getReplayStrategy().getMockConfig().getMockExceptionIndentities())){
+            return true;
+        }
+        return false;
+    }
+
+    public String getMockExceptionIndentities(){
+        return this.meta.getReplayStrategy().getMockConfig().getMockExceptionIndentities();
+    }
+
+
+    public boolean hasScriptConfig(){
+        if(null != this.meta
+            && null != this.meta.getReplayStrategy()
+            && null != this.meta.getReplayStrategy().getMockConfig()
+            && null != this.meta.getReplayStrategy().getMockConfig().getIdentfy2GroovyForMock()
+            && !this.meta.getReplayStrategy().getMockConfig().getIdentfy2GroovyForMock().isEmpty()){
+            return true;
+        }
+        return false;
+    }
+
+
+    public String getGroovyScript() {
+        if(hasScriptConfig()){
+           return this.meta.getReplayStrategy().getMockConfig().getIdentfy2GroovyForMock().get(this.identity.getUri());
+        }
+        return null;
     }
 
     public static class MockRequestBuilder {

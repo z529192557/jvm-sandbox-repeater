@@ -17,7 +17,7 @@ import org.kohsuke.MetaInfServices;
 public class DefaultMockStrategy extends AbstractMockStrategy {
 
     @Override
-    protected SelectResult select(MockRequest request) {
+    protected SelectResult doSelect(MockRequest request) {
         return SelectResult.builder()
             .cost(0L)
             .match(false)

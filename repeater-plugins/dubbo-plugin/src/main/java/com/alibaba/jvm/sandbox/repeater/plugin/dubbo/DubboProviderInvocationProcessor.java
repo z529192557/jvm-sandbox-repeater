@@ -33,7 +33,7 @@ class DubboProviderInvocationProcessor extends DubboConsumerInvocationProcessor 
 
     @Override
     public boolean ignoreEvent(InvokeEvent event) {
-        if(event.type == Type.BEFORE){
+        if(event.type == Type.BEFORE && !RepeatCache.isRepeatFlow()){
             BeforeEvent beforeEvent = (BeforeEvent)event;
             Object invoker = null;
             Object invocation = null;

@@ -14,6 +14,7 @@
         <module>diamond-config</module>
         <module>arms</module>
         <module>mq-broadcaster</module>
+        <module>groovy-script</module>
     </modules>
 
     <dependencies>

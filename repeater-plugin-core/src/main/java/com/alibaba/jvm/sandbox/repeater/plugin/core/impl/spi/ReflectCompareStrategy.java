@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 public class ReflectCompareStrategy extends AbstractMockStrategy {
 
     @Override
-    protected SelectResult select(MockRequest request) {
+    protected SelectResult doSelect(MockRequest request) {
         final List<Invocation> subInvocations = request.getRecordModel().getSubInvocations();
         Stopwatch stopwatch = Stopwatch.createStarted();
         if (CollectionUtils.isEmpty(subInvocations)) {

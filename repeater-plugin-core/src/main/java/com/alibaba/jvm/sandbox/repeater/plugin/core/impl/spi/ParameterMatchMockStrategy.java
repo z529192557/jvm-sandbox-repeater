@@ -34,7 +34,7 @@ import org.kohsuke.MetaInfServices;
 public class ParameterMatchMockStrategy extends AbstractMockStrategy {
 
     @Override
-    protected SelectResult select(MockRequest request) {
+    protected SelectResult doSelect(MockRequest request) {
         Stopwatch stopwatch = Stopwatch.createStarted();
         List<Invocation> subInvocations = request.getRecordModel().getSubInvocations();
 

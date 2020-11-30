@@ -45,11 +45,14 @@ public class RepeatMeta implements java.io.Serializable {
      * 回放数据源；服务端可指定module从何处加载回放数据源；http接口
      */
     private String datasource;
-
     /**
      * 回放结果通知 url
      */
     private String replayNotifyUrl;
+    /**
+     * 回放策略
+     */
+    private ReplayStrategy replayStrategy;
     /**
      * 调用超时时间
      */
@@ -143,5 +146,13 @@ public class RepeatMeta implements java.io.Serializable {
 
     public void setReplayNotifyUrl(String replayNotifyUrl) {
         this.replayNotifyUrl = replayNotifyUrl;
+    }
+
+    public ReplayStrategy getReplayStrategy() {
+        return replayStrategy;
+    }
+
+    public void setReplayStrategy(ReplayStrategy replayStrategy) {
+        this.replayStrategy = replayStrategy;
     }
 }

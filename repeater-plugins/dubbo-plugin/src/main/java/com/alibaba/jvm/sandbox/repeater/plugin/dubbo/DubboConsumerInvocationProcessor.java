@@ -142,7 +142,7 @@ class DubboConsumerInvocationProcessor extends DefaultInvocationProcessor {
     @Override
     public boolean ignoreEvent(InvokeEvent event) {
         if(DubboRunTimeUtil.isAliDubbo()){
-            if (event.type == Event.Type.BEFORE && RepeatCache.isRepeatFlow()) {
+            if (RepeatCache.isRepeatFlow()){
                 //如果是回放的入口直接忽略
                 Identity identity = assembleIdentity((BeforeEvent)event);
                 return RepeatCache.isReplayEntrance(identity);
