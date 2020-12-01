@@ -51,12 +51,21 @@ public abstract class AbstractSerializerAdapter implements Serializer {
         // sequence -> byte
         // 每次压缩之后base64的结果都不一样；会导致相似度匹配失效
         // return deserialize(decode(sequence), type, classLoader);
-        return sequence == null ? null : deserialize(BaseEncoding.base64().decode(sequence), type, classLoader);
+        if(sequence.startsWith("{") || sequence.startsWith("[")){
+            return sequence == null ? null : deserialize(sequence.getBytes(), type, classLoader);
+        }else{
+            return sequence == null ? null : deserialize(BaseEncoding.base64().decode(sequence), type, classLoader);
+        }
     }
 
     @Override
     public Object deserialize(String sequence) throws SerializeException{
-        return sequence == null ? null : deserialize(BaseEncoding.base64().decode(sequence));
+        if(sequence.startsWith("{") || sequence.startsWith("[")){
+            return sequence == null ? null : deserialize(sequence);
+        }else{
+            return sequence == null ? null : deserialize(BaseEncoding.base64().decode(sequence));
+        }
+
     }
 
     /**

@@ -25,7 +25,7 @@ public class SelectResult {
         this.match = match;
         this.invocation = invocation;
         this.cost = cost;
-        this.exceptionMock = false;
+        this.exceptionMock = exceptionMock;
     }
 
     public static SelectResult.SelectResultBuilder builder() {

@@ -180,11 +180,11 @@ public abstract class AbstractInvocationProcessor implements InvocationProcessor
          * 当期调用identify
          */
         Identity identity = this.assembleIdentity(event);
-        return skipMockFromReplayConfig(identity,context);
+        return skipMockFromReplayConfig(event,identity,context);
     }
 
-    protected boolean skipMockFromReplayConfig(Identity currentIdentity, RepeatContext context){
-        return !mockFilterHandler.needMock(currentIdentity,context);
+    protected boolean skipMockFromReplayConfig(BeforeEvent event, Identity currentIdentity,RepeatContext context){
+        return !mockFilterHandler.needMock(this.assembleRequest(event), currentIdentity, context);
     }
 
     @Override

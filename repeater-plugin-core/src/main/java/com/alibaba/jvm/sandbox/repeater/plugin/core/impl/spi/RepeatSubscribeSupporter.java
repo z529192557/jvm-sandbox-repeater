@@ -58,8 +58,13 @@ public class RepeatSubscribeSupporter implements SubscribeSupporter<RepeatEvent>
                 return;
             }
             log.info("subscribe success params={}", req);
+            RepeatMeta meta = null;
+            if(data.startsWith("{")){
+                meta = SerializerWrapper.jsonDeserialize(data,RepeatMeta.class);
+            }else{
+                meta = SerializerWrapper.hessianDeserialize(data,RepeatMeta.class);
+            }
 
-            final RepeatMeta meta = SerializerWrapper.hessianDeserialize(data, RepeatMeta.class);
             parseMeta(meta);
             RepeaterResult<RecordModel> pr = StandaloneSwitch.instance().getBroadcaster().pullRecord(meta);
             if (pr.isSuccess()){

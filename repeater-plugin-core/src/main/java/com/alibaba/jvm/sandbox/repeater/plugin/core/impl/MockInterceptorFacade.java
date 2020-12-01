@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceLoader;
 
+import com.alibaba.jvm.sandbox.repeater.plugin.core.config.BootStrapConfigFacotry;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.mock.MockRequest;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.mock.MockResponse;
 import com.alibaba.jvm.sandbox.repeater.plugin.spi.MockInterceptor;
@@ -32,6 +33,7 @@ public class MockInterceptorFacade implements MockInterceptor {
         while (iterator.hasNext()) {
             interceptors.add(iterator.next());
         }
+        interceptors.addAll(BootStrapConfigFacotry.getInstance().getMockInterceptor());
     }
 
     @Override

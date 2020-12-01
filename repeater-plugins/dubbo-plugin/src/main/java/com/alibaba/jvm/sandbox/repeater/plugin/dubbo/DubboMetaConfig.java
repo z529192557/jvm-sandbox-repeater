@@ -64,7 +64,7 @@ public class DubboMetaConfig {
         /**
          * 超时配置
          */
-        private Integer timeOut = 10000;
+        private Integer timeOut = 30000;
 
         public DubboMetaConfig build(){
             DubboMetaConfig config = new DubboMetaConfig();

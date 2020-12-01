@@ -12,6 +12,7 @@ public class MockInvocation implements java.io.Serializable {
     private String repeatId;
     private boolean success;
     private boolean skip;
+    private String skipMsg;
     private long cost;
     private String originUri;
     private String currentUri;
@@ -109,5 +110,13 @@ public class MockInvocation implements java.io.Serializable {
 
     public void setCurrentArgsSerialized(String currentArgsSerialized) {
         this.currentArgsSerialized = currentArgsSerialized;
+    }
+
+    public String getSkipMsg() {
+        return skipMsg;
+    }
+
+    public void setSkipMsg(String skipMsg) {
+        this.skipMsg = skipMsg;
     }
 }

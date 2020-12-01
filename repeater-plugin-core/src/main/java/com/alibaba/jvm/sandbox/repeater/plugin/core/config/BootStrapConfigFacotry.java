@@ -1,7 +1,9 @@
 package com.alibaba.jvm.sandbox.repeater.plugin.core.config;
 
 import java.net.URL;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ServiceLoader;
 
 import com.alibaba.jvm.sandbox.repeater.plugin.Constants;
 import com.alibaba.jvm.sandbox.repeater.plugin.annotation.ConfigActive;
@@ -21,7 +23,9 @@ import com.alibaba.jvm.sandbox.repeater.plugin.core.util.PathUtils;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.util.PropertyUtil;
 import com.alibaba.jvm.sandbox.repeater.plugin.core.util.SPILoader;
 import com.alibaba.jvm.sandbox.repeater.plugin.domain.RepeaterConfig;
+import com.alibaba.jvm.sandbox.repeater.plugin.spi.MockInterceptor;
 
+import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,6 +117,17 @@ public class BootStrapConfigFacotry {
         selectedBroadcaster.start();;
         return selectedBroadcaster;
     }
+
+    public List<MockInterceptor> getMockInterceptor() {
+            List<MockInterceptor> interceptors = Lists.newArrayList();
+            ServiceLoader<MockInterceptor> sl = ServiceLoader.load(MockInterceptor.class, repeaterLibClassLoader);
+            final Iterator<MockInterceptor> iterator = sl.iterator();
+            while (iterator.hasNext()) {
+                interceptors.add(iterator.next());
+            }
+            return interceptors;
+    }
+
 
     public EnvAware getEnvAware(RepeaterConfig repeaterConfig){
         ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
