@@ -18,6 +18,8 @@ public class MockInvocation implements java.io.Serializable {
     private String currentUri;
     private Object[] originArgs;
     private Object[] currentArgs;
+    private boolean mockException;
+    private String exceptionMsg;
     /**
      *  currentArgs序列化
      *  要对currentArgs进行及时序列化，因为例如mybatis框架可能会修改currentArgs的属性值
@@ -118,5 +120,21 @@ public class MockInvocation implements java.io.Serializable {
 
     public void setSkipMsg(String skipMsg) {
         this.skipMsg = skipMsg;
+    }
+
+    public boolean isMockException() {
+        return mockException;
+    }
+
+    public void setMockException(boolean mockException) {
+        this.mockException = mockException;
+    }
+
+    public String getExceptionMsg() {
+        return exceptionMsg;
+    }
+
+    public void setExceptionMsg(String exceptionMsg) {
+        this.exceptionMsg = exceptionMsg;
     }
 }

@@ -101,9 +101,12 @@ public abstract class AbstractMockStrategy implements MockStrategy {
                 mi.setOriginUri(invocation.getIdentity().getUri());
                 mi.setOriginArgs(invocation.getRequest());
             }else if(select.isExceptionMock()){
+                mi.setMockException(true);
+                String msg = "mock excepiton occur";
+                mi.setExceptionMsg(msg);
                 response = MockResponse.builder()
                     .action(Action.THROWS_IMMEDIATELY)
-                    .throwable(new RepeatException("mock excepiton occur")).build();
+                    .throwable(new RepeatException(msg)).build();
             }else {
                 response = MockResponse.builder()
                         .action(Action.THROWS_IMMEDIATELY)
