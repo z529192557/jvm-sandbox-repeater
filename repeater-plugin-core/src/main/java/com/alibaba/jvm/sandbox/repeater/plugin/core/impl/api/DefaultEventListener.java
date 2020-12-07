@@ -152,7 +152,7 @@ public class DefaultEventListener extends AbstraceEventListener {
      * @param event before事件
      */
     protected void doBefore(BeforeEvent event) throws ProcessControlException {
-        // 回放流量；如果是入口则放弃；子调用则进行mock
+        // 回放流量进行mock
         if (RepeatCache.isRepeatFlow(TraceFactory.getTraceId())) {
             processor.doMock(event, entrance, invokeType);
             return;
