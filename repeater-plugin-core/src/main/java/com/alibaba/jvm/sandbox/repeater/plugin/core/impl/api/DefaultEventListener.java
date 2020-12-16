@@ -309,7 +309,8 @@ public class DefaultEventListener extends AbstraceEventListener {
      */
     protected void initContext(Event event) {
         if (entrance && isEntranceBegin(event)) {
-            TraceFactory.start();
+            TraceContext traceContext = TraceFactory.start();
+            traceContext.setInvokeType(invokeType);
         }
     }
 
