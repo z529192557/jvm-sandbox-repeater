@@ -286,7 +286,7 @@ public class DubboRepeater extends AbstractRepeater {
     }
 
     Integer getDubboTimeOut(RepeatContext context){
-        String timeOut = getMetaExtension(context, "dubbo.timeOut");
+        String timeOut = getMetaExtension(context, "dubbo.timeout");
         if(null != timeOut){
             return Integer.valueOf(timeOut);
         }
